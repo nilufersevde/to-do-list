@@ -1,10 +1,10 @@
 import createTask from "./createtask";
 
-export default function createProject(title) {
+export default function createProjec(title) {
     const taskarray = [];
 
-    function addTask(task){
-        taskarray.push(createTask(task));
+    function addTask(title, description, dueDate, importance = "low", completed = "incomplete"){
+        taskarray.push(createTask(title, description, dueDate, importance = "low", completed = "incomplete" ));
     }
 
     function deleteTask(task) {
@@ -17,7 +17,7 @@ export default function createProject(title) {
     return {title,
         taskarray,
         addTask,
-        deleteTask
+        deleteTask,
     }
 }
 
