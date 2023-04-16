@@ -3,8 +3,8 @@ import createTask from "./createtask";
 export default function createProjec(title) {
     const taskarray = [];
 
-    function addTask(title, description, dueDate, importance = "low", completed = "incomplete"){
-        taskarray.push(createTask(title, description, dueDate, importance = "low", completed = "incomplete" ));
+    function addTask(title, description, dueDate, importance){
+        taskarray.push(createTask(title, description, dueDate, importance));
     }
 
     function deleteTask(task) {

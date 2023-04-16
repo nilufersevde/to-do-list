@@ -1,4 +1,5 @@
 import createProjec from "./createproject";
+import createTaskUI from "./tasklist"; 
 
 //creating and displaying projects
 export default function createProjectUI() {
@@ -7,22 +8,14 @@ export default function createProjectUI() {
     const modalProject = document.querySelector(".modal-project");
     const projectList = document.querySelector(".project-list");
     const closeButton = document.querySelector(".close-modal");
-    const mainPlace = document.querySelector(".main-place")
+    const mainPlace = document.querySelector(".main-place");
+    const formProject = document.querySelector(".form-project");
     //creating array for adding new projects
     const projectArray = [];
 
-    function  closeForm() {
-        modalProject.style.visibility = "hidden";
-        form.reset();
-    }
-    
-    function openForm() {
-        modalProject.style.visibility = "visible";
-    }
-    
     function displayProjects() {
         //displays the last element that has added to projectArray
-        for (let i=document.querySelectorAll(".project-list li").length; i <projectArray.length; i++) {
+        for (let i=document.querySelectorAll(".project-list div").length; i <projectArray.length; i++) {
             //creating the project element
             let element = document.createElement("div");
             element.innerText = projectArray[i].title;
@@ -38,14 +31,19 @@ export default function createProjectUI() {
         }
     }
 
+    displayProjects()
+
     projectList.addEventListener('click', function openProjectPage(e) {
         if (e.target.classList.contains("project_element")) {
+          mainPlace.innerText = " ";
           const targetelement = e.target;
           const index = targetelement.getAttribute("data-index");
           let element = document.createElement("div");
           let project = projectArray[index];
+          console.log(index);
           element.innerText =project.title;
           mainPlace.appendChild(element);
+          createTaskUI(project);
 
     } } ) 
 
@@ -60,7 +58,14 @@ export default function createProjectUI() {
         }
     })
 
-    addProjectButton.addEventListener("click",openForm);
+    function  closeForm() {
+        modalProject.style.visibility = "hidden";
+        formProject.reset();
+    }
+
+    addProjectButton.addEventListener("click", () => {
+        modalProject.style.visibility = "visible";
+   })
 
     closeButton.addEventListener("click",closeForm);
 
@@ -71,11 +76,21 @@ export default function createProjectUI() {
         const project = createProjec(projectTitle);
         projectArray.push(project);
         displayProjects();
+        closeForm();
         }
     )
 }
 
 createProjectUI();
+
+
+
+
+
+
+   
+
+
 
 
 

@@ -1,4 +1,5 @@
 import createProjec from "./createproject";
+import createTaskUI from "./tasklist";
 
 //creating and displaying projects
 export default function createProjectUI() {
@@ -7,39 +8,45 @@ export default function createProjectUI() {
     const modalProject = document.querySelector(".modal-project");
     const projectList = document.querySelector(".project-list");
     const closeButton = document.querySelector(".close-modal");
+    const mainPlace = document.querySelector(".main-place");
+    const formProject = document.querySelector(".form-project");
     //creating array for adding new projects
     const projectArray = [];
 
-    function  closeForm() {
-        modalProject.style.visibility = "hidden";
-        form.reset();
-    }
-    
-    function openForm() {
-        modalProject.style.visibility = "visible";
-    }
-    
-    function displayProject() {
+    function displayProjects() {
         //displays the last element that has added to projectArray
-        for (let i=document.querySelectorAll(".project-list li").length; i <projectArray.length; i++) {
+        for (let i=document.querySelectorAll(".project-list div").length; i <projectArray.length; i++) {
             //creating the project element
             let element = document.createElement("div");
-            //setting data-index to delete element from projectArray
-            element.setAttribute('data-index', i);
             element.innerText = projectArray[i].title;
+            element.classList.add("project_element");
+            //setting data-index to easily find the element in the projectArray
+            element.setAttribute('data-index', i);
             projectList.appendChild(element);
-            //adding button to project element 
+            //adding delete button to project element 
             let deletebutton = document.createElement("button");
             deletebutton.innerText = "X";
-            //adding class name to check if the delete button was clicked
             deletebutton.classList.add("delete_button");
             element.appendChild(deletebutton);
         }
     }
-    
-    projectList.addEventListener('click', function removeBook(e) {
+
+    displayProjects()
+
+    projectList.addEventListener('click', function openProjectPage(e) {
+        if (e.target.classList.contains("project_element")) {
+          const targetelement = e.target;
+          const index = targetelement.getAttribute("data-index");
+          let element = document.createElement("div");
+          let project = projectArray[index];
+          element.innerText =project.title;
+          mainPlace.appendChild(element);
+          createTaskUI(project);
+    } } ) 
+
+    projectList.addEventListener('click', function removeProject(e) {
         if (e.target.classList.contains("delete_button")) {
-          //deleting project element from the page
+          //targeting the project element that contains clicked delete button
           const targetelement = e.target.parentNode.parentNode;
           targetelement.remove();
           const index = targetelement.getAttribute("data-index");
@@ -48,7 +55,14 @@ export default function createProjectUI() {
         }
     })
 
-    addProjectButton.addEventListener("click",openForm);
+    function  closeForm() {
+        modalProject.style.visibility = "hidden";
+        formProject.reset();
+    }
+
+    addProjectButton.addEventListener("click", () => {
+        modalProject.style.visibility = "visible";
+   })
 
     closeButton.addEventListener("click",closeForm);
 
@@ -58,9 +72,10 @@ export default function createProjectUI() {
         let projectTitle = document.getElementById("title").value;
         const project = createProjec(projectTitle);
         projectArray.push(project);
-        displayProject();
+        displayProjects();
+        closeForm();
         }
     )
 }
 
-createProjectUI();
+
