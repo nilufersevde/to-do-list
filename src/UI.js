@@ -4,29 +4,107 @@ import displayProjects from "./displayprojects";
 
 //creating and displaying projects
 export default function createUI() {
-
+   
     const addProjectButton = document.querySelector(".create-project");
     const modalProject = document.querySelector(".modal-project");
     const projectList = document.querySelector(".project-list");
     const closeButtonTask = document.querySelector(".close-modal-task");
     const closeButtonProject = document.querySelector(".close-modal-project");
     const mainPlace = document.querySelector(".main-place");
+    const defaultProjects = document.querySelector(".default");
     const formProject = document.querySelector(".form-project");
     const modalTask = document.querySelector(".modal-task");
     const formTask = document.querySelector(".form-task");
-    let table = document.querySelector("table");
-    let element = document.createElement("div");
+    const table = document.querySelector("table");
+    const element = document.createElement("div");
     const addTaskButton = document.createElement("button");
     addTaskButton.innerText = "+" ;
     mainPlace.appendChild(element);
     mainPlace.appendChild(addTaskButton);
     addTaskButton.style.visibility = "hidden";
     mainPlace.appendChild(table);
+    let currentTask = " ";
+
+
+    /*----Default Projects----- */
+
+    const allTasks = createProjec("All tasks");
+    const today = createProjec("today");
+    const thisWeek = createProjec("This week");
+    const important = createProjec("important");
+
+
     const projectArray = [];
-    let currentproject = " ";
+    let currentproject = allTasks;
 
     displayProjects(projectArray);
+    displayTasks(currentproject);
+    element.innerHTML = "All Tasks";
+    addTaskButton.style.visibility = "visible";
 
+
+    defaultProjects.addEventListener("click", function(e) {
+        if (e.target.classList.contains("default-project")) {
+          element.innerHTML = " ";
+          element.innerHTML = e.target.innerText;
+          table.innerHTML = " ";
+          addTaskButton.style.visibility = "visible";
+          if (e.target.id == "allTasks") {
+            displayTasks(allTasks);
+          }
+          else if  (e.target.id == "today") {
+            displayTasks(today);
+          }
+          else if (e.target.id == "thisWeek") {
+            displayTasks(thisWeek);
+          }
+          else {
+            displayTasks(important);
+        };
+    } })
+
+    /*------------*/
+
+
+    /*----Pop up form for the task details ----*/
+    let pop_up = document.createElement("div");
+    pop_up.classList.add = "pop-up";
+    mainPlace.appendChild(pop_up);
+    pop_up.style.visibility = "hidden";
+    function openPopUp(currentTask) {
+        pop_up.style.visibility = "visible";
+        pop_up.innerHTML = `
+         <div class="popup">
+            <div class="popup__close">X</div>
+            <div class="popup__content">
+            	<div class="popup title">${currentTask.title}</div>
+            	<div class="popup priority"><span>Priority: </span>${currentTask.importance}</div>
+            	<div class="popup due"><span>Due Date: </span>${currentTask.dueDate}</div>
+            	<div class="popup details"><span>Description: </span>${currentTask.description}</div>
+            </div>
+        </div>
+         `; }
+
+    document.addEventListener("click", function (e) {
+
+        if (e.target.classList.contains("popup__close")) {
+            pop_up.style.visibility = "hidden";
+          }
+    })
+
+    table.addEventListener("click", function (e) {
+
+            if (e.target.classList.contains("details")) {
+              const targetelement = e.target.parentNode.parentNode;
+              const dataIndex = targetelement.getAttribute("data-index");
+              currentTask = currentproject.taskarray[dataIndex];
+              openPopUp(currentTask);
+            }
+    })
+   /*------------------*/
+
+
+    /*-------Modal Project------ */
     addProjectButton.addEventListener("click", () => {
         modalProject.style.visibility = "visible";
    })
@@ -44,50 +122,61 @@ export default function createUI() {
         let projectTitle = document.getElementById("title").value;
         const project = createProjec(projectTitle);
         projectArray.push(project);
+        project.id = projectArray.indexOf(project);
         displayProjects(projectArray);
         closeForm();
         }
     )
+    /*------*/
 
+
+    /*---projectlisteventlisteners */
     //when click on the delete button removes the project
-    projectList.addEventListener('click', function removeProject(e) {
+    projectList.addEventListener('click', function(e) {
         if (e.target.classList.contains("delete_button")) {
           //targeting the project element that contains clicked delete button
           const targetelement = e.target.parentNode;
-          targetelement.remove();
-          const index = targetelement.getAttribute("data-index");
-          //deleting element from projectArray
-          projectArray.splice(index,1);
-        }
-    })
+          const dataIndex = targetelement.getAttribute("data-index");
+          const targetedproject = projectArray.find(item => item.id == dataIndex);
+          const index = projectArray.indexOf(targetedproject);
+          if (currentproject == targetedproject) {
+            element.innerHTML = " ";
+            table.innerHTML = " ";
+            element.innerHTML = "All Tasks";
+            currentproject = allTasks;
+            displayTasks(currentproject);
 
+          }
+          projectArray.splice(index,1);
+          targetelement.remove();
+        }
+    
     //when click on a project displays it's tasks
-    projectList.addEventListener('click', function openProjectPage(e) {
-        if (e.target.classList.contains("project_element")) {
-          //mainPlace.innerText = " ";
-          const targetelement = e.target;
-          const index = targetelement.getAttribute("data-index");
+        else if (e.target.classList.contains("project_element")) {
+          const dataIndex = e.target.getAttribute("data-index");
+          console.log(dataIndex)
           element.innerHTML = " "
           table.innerHTML = " "
-          currentproject = projectArray[index];
-          element.innerText =currentproject.title;
-          projectpage(currentproject)
-    } } ) 
+          currentproject = projectArray.find(item => item.id == dataIndex);
+          console.log(currentproject);
+          element.innerText = currentproject.title;
+          addTaskButton.style.visibility = "visible";
+          displayTasks(currentproject);
+    } })
+    /*----------*/
 
-    function projectpage(project) {
-        addTaskButton.style.visibility = "visible";
-        displayTasks(project);
-        mainPlace.appendChild(addTaskButton);
-        addTaskButton.addEventListener("click", () => {
+
+    /*------Modal Task-------*/
+    addTaskButton.addEventListener("click", () => {
             modalTask.style.visibility = "visible";
        })
-
-    closeButtonTask.addEventListener("click",closeFormTask); }
 
     function  closeFormTask() {
             modalTask.style.visibility = "hidden";
             formTask.reset();
     }
+
+    closeButtonTask.addEventListener("click",closeFormTask);
 
     //creates a task, and displays it in the projects page when submit the task form
     modalTask.addEventListener("submit", (e) => {
@@ -103,4 +192,5 @@ export default function createUI() {
           displayTasks(currentproject);
          }
      )
+    /*--------*/
 }
