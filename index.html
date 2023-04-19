@@ -43,20 +43,31 @@
         </div>
         <form action="#" class="form-task">
             <div>
-                <label for="name">Name</label>
+                <label for="name">Name: </label>
                 <input type="text" id="name" name="name" >
             </div>
             <div>
-                <label for="description">Description</label>
+                <label for="description">Description: </label>
                 <input type="text" id="description" name="description">
             </div>
             <div>
-                <label for="importance">Importance</label>
-                <input type="text" id="importance" name="importance">
+                <label for="importance">Importance: </label>
+                        <div>
+                            <input type="radio" name="importance" value="High" id="high">
+                            <label for="high">High</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="importance" value="Medium" id="medium">
+                            <label for="medium">Medium</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="importance" value="Low" id="low">
+                            <label for="low">Low</label>
+                        </div>
             </div>
             <div>
-                <label for="due-date">Due Date</label>
-                <input type="text" id="due-date" name="due-date">
+                <label for="due-date">Due Date: </label>
+                <input type="date" id="due-date" name="due-date">
             </div>
             <button type="submit" class="submit">Add</button>
         </form>
