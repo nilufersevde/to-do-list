@@ -5,16 +5,16 @@ import {
     isToday,
     toDate,
     isThisWeek,
-    isBefore,
-    endOfToday,
-    add,
-    format,
   } from "date-fns";
 
+import createTask from "./createtask";
+
 //creating and displaying projects
+
 export default function createUI() {
    
     //DOM elements 
+
     const addProjectButton = document.querySelector(".create-project");
     const modalProject = document.querySelector(".modal-project");
     const projectList = document.querySelector(".project-list");
@@ -28,12 +28,15 @@ export default function createUI() {
     const table = document.querySelector("table");
     let element = document.createElement("div");
     const addTaskButton = document.createElement("button");
+    const deleteTaskButton = document.querySelector(".delete-button");
     addTaskButton.innerText = "+" ;
     mainPlace.appendChild(element);
     mainPlace.appendChild(addTaskButton);
     addTaskButton.style.visibility = "hidden";
     mainPlace.appendChild(table);
     let currentTask = " ";
+    let editing = false;
+    const submitButton = document.querySelector(".add");
 
 
     /*----Default Projects----- */
@@ -63,12 +66,15 @@ export default function createUI() {
           }
           else if  (e.target.id == "today") {
             displayTasks(today);
+            addTaskButton.style.visibility = "hidden";
           }
           else if (e.target.id == "thisWeek") {
             displayTasks(thisWeek);
+            addTaskButton.style.visibility = "hidden";
           }
           else {
             displayTasks(important);
+            addTaskButton.style.visibility = "hidden";
         };
     } })
 
@@ -129,7 +135,6 @@ export default function createUI() {
           element.innerHTML = " "
           table.innerHTML = " "
           currentproject = projectArray.find(item => item.id == dataIndex);
-          console.log(currentproject);
           element.innerText = currentproject.title;
           addTaskButton.style.visibility = "visible";
           displayTasks(currentproject);
@@ -150,30 +155,31 @@ export default function createUI() {
     closeButtonTask.addEventListener("click",closeFormTask);
 
     //creates a task, and displays it in the projects page when submit the task form
-    modalTask.addEventListener("submit", (e) => {
-            e.preventDefault();
+    submitButton.addEventListener("click", (e) => {
+        e.preventDefault();
         //getting the values from the form
+        if (editing == false) {
         let taskName = document.getElementById("name").value;
         let taskDescription = document.getElementById("description").value;
         let taskDueDate = document.getElementById("due-date").value;
         let taskImportance = document.querySelector('input[name="importance"]:checked').value;
+        const task = createTask(taskName,taskDescription,taskDueDate,taskImportance);
         //adding task to taskarray
-        currentproject.addTask(taskName,taskDescription,taskDueDate,taskImportance);
-        if (currentproject !==allTasks) {allTasks.addTask(taskName,taskDescription,taskDueDate,taskImportance)};
+        currentproject.addTask(task);
+        if (currentproject !==allTasks) {allTasks.addTask(task)};
         let formattedDate = toDate(new Date(taskDueDate));
-        console.log(formattedDate);
-        console.log(isThisWeek(formattedDate));
         if (isToday(formattedDate)) {
-            thisWeek.addTask(taskName,taskDescription,taskDueDate,taskImportance);
+            today.addTask(task);
         }
         if (isThisWeek(formattedDate)) {
-            today.addTask(taskName,taskDescription,taskDueDate,taskImportance);
+            thisWeek.addTask(task);
         }
-        console.log(thisWeek.taskarray);
+        if (taskImportance == "High" ) {
+            important.addTask(task);
+        }
         closeFormTask();
         displayTasks(currentproject);
-        }
-    )
+        }})
     /*--------*/
 
 
@@ -201,16 +207,94 @@ export default function createUI() {
         if (e.target.classList.contains("popup__close")) {
             pop_up.style.visibility = "hidden";
           }
-    })
 
-    table.addEventListener("click", function (e) {
-
-            if (e.target.classList.contains("details")) {
+        if (e.target.classList.contains("details")) {
               const targetelement = e.target.parentNode.parentNode;
               const dataIndex = targetelement.getAttribute("data-index");
-              currentTask = currentproject.taskarray[dataIndex];
+              currentTask = currentproject.taskarray.find(item => item.id == dataIndex);
               openPopUp(currentTask);
-            }
+          }
     })
    /*------------------*/    
+
+
+
+   /*------EDİT------- */
+
+
+   table.addEventListener("click", (e)=> {
+        if (e.target.classList.contains("edit-button")) {
+            editing = true;
+            modalTask.style.visibility = "visible";
+            const dataIndex = e.target.parentNode.parentNode.getAttribute("data-index");
+            currentTask = currentproject.taskarray.find(item => item.id == dataIndex);
+            document.getElementById("name").value = currentTask.title;
+            document.getElementById("description").value = currentTask.description;
+            document.getElementById("due-date").value = currentTask.dueDate;
+            if (currentTask.importance == "High") {
+                document.formTask.importance[0].checked = true;
+            }
+            else if (currentTask.importance == "Medium") {
+                document.formTask.importance[1].checked = true;
+            }
+            else {
+                document.formTask.importance[2].checked = true;
+            }
+
+            let beforeEditImportance = currentTask.importance;
+
+            let beforeEditDate = toDate(new Date(currentTask.dueDate));
+
+        submitButton.addEventListener("click", biseyler)
+        function biseyler(){
+            currentTask.title = document.getElementById("name").value;
+            currentTask.description = document.getElementById("description").value;;
+            currentTask.dueDate = document.getElementById("due-date").value;
+            currentTask.importance = document.querySelector('input[name="importance"]:checked').value;
+            table.rows[dataIndex].cells[1].innerHTML = currentTask.title;
+            table.rows[dataIndex].cells[2].innerHTML = currentTask.importance;
+            table.rows[dataIndex].cells[3].innerHTML = currentTask.dueDate;
+
+            let currentDate = toDate(new Date(currentTask.dueDate));
+
+            if ((isToday(beforeEditDate)) && (isToday(currentDate)==false)) {
+                today.deleteTask(currentTask);
+            }
+
+            if ((isThisWeek(beforeEditDate)) && (isThisWeek(currentDate)==false)) {
+                thisWeek.deleteTask(currentTask);
+            }
+            if ((isToday(beforeEditDate)==false) && (isToday(currentDate))) {
+                today.addTask(currentTask);
+            }
+
+            if ((isThisWeek(beforeEditDate)==false) && (isThisWeek(currentDate))) {
+                thisWeek.addTask(currentTask);
+            }
+            if ((beforeEditImportance == "High") & (currentTask.importance != "High")) {
+                important.deleteTask(currentTask);
+            }
+            if ((beforeEditImportance != "High") & (currentTask.importance == "High")) {
+                important.addTask(currentTask);
+            }
+            
+            editing = false;
+            closeFormTask();
+
+            if (editing == false) {
+                submitButton.removeEventListener("click",biseyler)
+            }
+        }
+
+        //
+}})
+
+/*------------ */
+
+
+/*-----taskeventlisteners----- */
+
+
+
+
 }
