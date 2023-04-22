@@ -1,18 +1,17 @@
 export default function displayTasks(project) {
 
      let table = document.querySelector("table");
-     const mainPlace = document.querySelector(".main-place");
 
      for (let i=table.rows.length; i < project.taskarray.length; i++) {
          let row = table.insertRow(i);
          row.setAttribute('data-index', i);
          row.classList.add("row");
-
-         let statusbutton = document.createElement("button");
-         statusbutton.innerText = "X";
-         statusbutton.classList.add("delete-button");
-         let cellstatus = row.insertCell(0); 
-         cellstatus.appendChild(statusbutton);
+        
+        let completecheck = row.insertCell(0);
+        completecheck.innerHTML = `
+        <label for="accept">
+            <input type="checkbox" id="check" name="check" value="yes"></input>
+        </label>` 
 
          let title = row.insertCell(1);
          title.innerHTML = project.taskarray[i].title;
@@ -34,7 +33,7 @@ export default function displayTasks(project) {
 
          let edit = document.createElement("button");
          edit.innerText = "edit";
-         edit.classList.add("edit");
+         edit.classList.add("edit-button");
          let celledit = row.insertCell();
          celledit.appendChild(edit);
 

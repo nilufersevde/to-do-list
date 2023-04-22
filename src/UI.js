@@ -83,11 +83,11 @@ export default function createUI() {
 
     /*-------Modal Project------ */
     addProjectButton.addEventListener("click", () => {
-        modalProject.style.visibility = "visible";
+        modalProject.style.display = "block";
    })
 
     function  closeForm() {
-        modalProject.style.visibility = "hidden";
+        modalProject.style.display = "none";
         formProject.reset();
     }
     closeButtonProject.addEventListener("click",closeForm);
@@ -113,8 +113,7 @@ export default function createUI() {
         //when click on the delete button removes the project
         if (e.target.classList.contains("delete_button")) {
           //targeting the project element that contains clicked delete button
-          const targetelement = e.target.parentNode;
-          const dataIndex = targetelement.getAttribute("data-index");
+          const dataIndex = e.target.parentNode.getAttribute("data-index");
           const targetedproject = projectArray.find(item => item.id == dataIndex);
           const index = projectArray.indexOf(targetedproject);
           if (currentproject == targetedproject) {
@@ -126,7 +125,7 @@ export default function createUI() {
 
           }
           projectArray.splice(index,1);
-          targetelement.remove();
+          e.target.parentNode.remove();
         }
     
     //when click on a project displays it's tasks
@@ -144,11 +143,11 @@ export default function createUI() {
 
     /*------Modal Task-------*/
     addTaskButton.addEventListener("click", () => {
-        modalTask.style.visibility = "visible";
+        modalTask.style.display = "block";
    })
 
     function  closeFormTask() {
-            modalTask.style.visibility = "hidden";
+            modalTask.style.display = "none";
             formTask.reset();
     }
 
@@ -187,9 +186,9 @@ export default function createUI() {
     let pop_up = document.createElement("div");
     pop_up.classList.add = "pop-up";
     mainPlace.appendChild(pop_up);
-    pop_up.style.visibility = "hidden";
+    pop_up.style.display = "none";
     function openPopUp(currentTask) {
-        pop_up.style.visibility = "visible";
+        pop_up.style.display = "block";
         pop_up.innerHTML = `
          <div class="popup">
             <div class="popup__close">X</div>
@@ -205,7 +204,7 @@ export default function createUI() {
     document.addEventListener("click", function (e) {
 
         if (e.target.classList.contains("popup__close")) {
-            pop_up.style.visibility = "hidden";
+            pop_up.style.display = "none";
           }
 
         if (e.target.classList.contains("details")) {
@@ -225,7 +224,7 @@ export default function createUI() {
    table.addEventListener("click", (e)=> {
         if (e.target.classList.contains("edit-button")) {
             editing = true;
-            modalTask.style.visibility = "visible";
+            modalTask.style.display = "block";
             const dataIndex = e.target.parentNode.parentNode.getAttribute("data-index");
             currentTask = currentproject.taskarray.find(item => item.id == dataIndex);
             document.getElementById("name").value = currentTask.title;
@@ -245,8 +244,8 @@ export default function createUI() {
 
             let beforeEditDate = toDate(new Date(currentTask.dueDate));
 
-        submitButton.addEventListener("click", biseyler)
-        function biseyler(){
+        submitButton.addEventListener("click", editTaskSave)
+        function editTaskSave(){
             currentTask.title = document.getElementById("name").value;
             currentTask.description = document.getElementById("description").value;;
             currentTask.dueDate = document.getElementById("due-date").value;
@@ -292,9 +291,18 @@ export default function createUI() {
 /*------------ */
 
 
-/*-----taskeventlisteners----- */
+/*-----Delete Task----- */
 
+table.addEventListener("click",(e)=>{
+    if (e.target.classList.contains("delete-button")) {
+        const dataIndex = e.target.parentNode.parentNode.getAttribute("data-index");
+        currentTask = currentproject.taskarray.find(item => item.id == dataIndex);
+        currentproject.deleteTask(currentTask);
+        allTasks.deleteTask(currentTask);
+        today.deleteTask(currentTask);
+        thisWeek.deleteTask(currentTask);
+        important.deleteTask(currentTask);
+        e.target.parentNode.parentNode.remove();}
 
-
-
+})
 }

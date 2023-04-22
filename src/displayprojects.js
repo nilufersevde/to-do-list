@@ -13,7 +13,7 @@ export default function displayProjects(projectArray) {
         //adding delete button to project element 
         let deletebutton = document.createElement("button");
         deletebutton.innerText = "X";
-        deletebutton.classList.add("delete_button");
+        deletebutton.classList.add("delete-button-project");
         element.appendChild(deletebutton);
     }
 }
