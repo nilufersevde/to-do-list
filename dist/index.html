@@ -6,31 +6,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css" />
     <title>What To Do</title>
-</head>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300&display=swap" rel="stylesheet">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Karla:wght@300;400;500&display=swap" rel="stylesheet">
+
+
+
 <body>
     <div class = "content">
 
-        <div class="header">// What To Do</div>
+        
+        <div class="header">
+            <div class="open_menu">
+                <img  src="menu.png" >
+            </div>
+            <div>What To Do</div>
+        </div>
+        
     
-        <div class="menu">
+        <div class = "menu" >
+            <div class="menu-content">
                 <div class="default">
-                    <div class = "default-project" id="allTasks">All Tasks</div>
-                    <div class = "default-project" id="today">Today</div>
-                    <div class = "default-project" id="thisWeek">This week</div>
-                    <div class = "default-project" id="important">Important</div>
+                    <div class = "all flex allTasks" id="allTasks">
+                        <img src="task.png" class="all">
+                        <div class = "all default-project">All Tasks</div>
+                    </div>
+                    <div class = "all flex today">
+                        <img src="calendar.png" class="all">
+                        <div class = "all default-project">Today</div>
+                    </div>
+                    <div class = "all flex thisWeek">
+                        <img src="7-days.png" class="all">
+                        <div class = "all default-project" >This week</div>
+                    </div>
+                    <div class = "all flex important">
+                        <img src="important.png" class="all">
+                        <div class = "all default-project">Important</div>
+                    </div>
                 </div>
                 <div class="projects">
                     <div class="project-header">
+                        <img src="project.png">
                         <div class="project-title">Your Projects</div>
                         <button class="create-project">+</button>
                     </div>
                     <div class="project-list"></div>
                 </div>
+            </div>
         </div>
+
+
 
         <div class="main-place">
                 <table></table>
         </div>
+
         
 
         <div class="modal-project"  style="display:none";>
@@ -85,11 +124,6 @@
 
 
     </div>
-
-
-
-        
-        
     
     <script src="main.js"></script>
 </body>

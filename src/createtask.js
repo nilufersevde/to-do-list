@@ -4,5 +4,6 @@ export default function createTask(title, description, dueDate, importance) {
         description,
         dueDate,
         importance,
+
     }
 }
