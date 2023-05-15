@@ -7,13 +7,6 @@
     <link rel="stylesheet" href="style.css" />
     <title>What To Do</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300&display=swap" rel="stylesheet">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +22,7 @@
             <div class="open_menu">
                 <img  src="menu.png" >
             </div>
-            <div>What To Do</div>
+            <div class="what">What To Do</div>
         </div>
         
     
@@ -70,21 +63,28 @@
                 <table></table>
         </div>
 
-        
+    </div>    
 
+
+    <div class="modal-project-container">
+        
         <div class="modal-project"  style="display:none";>
-            <div class="modal-header">
             <button class="close-modal-project">X</button>
-            <h4 class="modal-title">Create Project</h4>
+            <div class="modal-header">
+                <h4 class="modal-title">Create Project</h4>
             </div>
-            <form action="#" class="form-project">
-                <div>
-                    <label for="title">Title</label>
-                    <input type="text" id="title" name="title" >
-                </div>
-                <button type="submit" class="submit">Add</button>
-            </form>
+            <div>
+                <form action="#" class="form-project">
+                    <div>
+                        <label for="title">Title: </label>
+                        <input type="text" id="title" name="title" >
+                    </div>
+                    <button type="submit" class="submit">Add</button>
+                </form>
+            </div>
+
         </div>
+    </div>
         <div class="modal-task"  style="display:none";>
             <div class="modal-header">
             <button class="close-modal-task">X</button>
@@ -101,15 +101,15 @@
                 </div>
                 <div>
                     <label for="importance">Importance: </label>
-                            <div>
+                            <div class="radio">
                                 <input type="radio" name="importance" value="High" id="high">
                                 <label for="high">High</label>
                             </div>
-                            <div>
+                            <div class="radio">
                                 <input type="radio" name="importance" value="Medium" id="medium">
                                 <label for="medium">Medium</label>
                             </div>
-                            <div>
+                            <div class="radio">
                                 <input type="radio" name="importance" value="Low" id="low">
                                 <label for="low">Low</label>
                             </div>
@@ -118,12 +118,14 @@
                     <label for="due-date">Due Date: </label>
                     <input type="date" id="due-date" name="due-date">
                 </div>
-                <button class="add">Add</button>
+                <div class="button-container">
+                    <button class="add">Add</button>
+                </div>
             </form>
         </div>
 
 
-    </div>
+    
     
     <script src="main.js"></script>
 </body>
