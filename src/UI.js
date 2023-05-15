@@ -14,7 +14,7 @@ import createTask from "./createtask";
 export default function createUI() {
    
     //DOM elements 
-
+    const pagecontent = document.querySelector(".content")
     const addProjectButton = document.querySelector(".create-project");
     addProjectButton.classList.add("addPage");
     const modalProject = document.querySelector(".modal-project");
@@ -27,13 +27,17 @@ export default function createUI() {
     const modalTask = document.querySelector(".modal-task");
     const formTask = document.querySelector(".form-task");
     const table = document.querySelector("table");
+    let headerAndButton = document.createElement("div");
     let element = document.createElement("div");
     element.classList.add("project-header-place")
     const addTaskButton = document.createElement("button");
     addTaskButton.innerText = "+" ;
     addTaskButton.classList.add("addPage");
-    mainPlace.appendChild(element);
-    mainPlace.appendChild(addTaskButton);
+    addTaskButton.classList.add("addTaskButton");
+    headerAndButton.appendChild(element);
+    headerAndButton.appendChild(addTaskButton);
+    headerAndButton.classList.add("header-and-button");
+    mainPlace.appendChild(headerAndButton);
     addTaskButton.style.visibility = "hidden";
     mainPlace.appendChild(table);
     let currentTask = " ";
@@ -44,6 +48,7 @@ export default function createUI() {
     const thisWeekDiv = document.querySelector(".thisWeek");
     const importantDiv = document.querySelector(".important");
     allTasksDiv.classList.add("active");
+    
 
    
 
@@ -62,6 +67,7 @@ export default function createUI() {
     displayTasks(currentproject);
     element.innerHTML = "All Tasks";
     addTaskButton.style.visibility = "visible";
+    
 
 
     defaultProjects.addEventListener("click", function(e) {
@@ -71,28 +77,32 @@ export default function createUI() {
           addTaskButton.style.visibility = "visible";
           if (e.target==allTasksDiv||e.target.parentElement==allTasksDiv) {
             displayTasks(allTasks);
-            document.querySelector(".active").classList.remove("active");
+            if (document.querySelector(".active")){
+            document.querySelector(".active").classList.remove("active")};
             allTasksDiv.classList.add("active");
             element.innerHTML="All Tasks";
           }
           else if  (e.target==todayDiv||e.target.parentElement==todayDiv) {
             displayTasks(today);
             addTaskButton.style.visibility = "hidden";
-            document.querySelector(".active").classList.remove("active");
+            if (document.querySelector(".active")){
+                document.querySelector(".active").classList.remove("active")}
             todayDiv.classList.add("active");
             element.innerHTML="Today";
           }
           else if (e.target==thisWeekDiv ||e.target.parentElement==thisWeekDiv) {
             displayTasks(thisWeek);
             addTaskButton.style.visibility = "hidden";
-            document.querySelector(".active").classList.remove("active");
+            if (document.querySelector(".active")){
+                document.querySelector(".active").classList.remove("active")}
             thisWeekDiv.classList.add("active");
             element.innerHTML="This week";
           }
           else if (e.target==importantDiv||e.target.parentElement==importantDiv){
             displayTasks(important);
             addTaskButton.style.visibility = "hidden";
-            document.querySelector(".active").classList.remove("active");
+            if (document.querySelector(".active")){
+                document.querySelector(".active").classList.remove("active")}
             importantDiv.classList.add("active");
             element.innerHTML="Important";
         };
@@ -104,12 +114,13 @@ export default function createUI() {
     /*-------Modal Project------ */
     addProjectButton.addEventListener("click", () => {
         modalProject.style.display = "block";
-
+        pagecontent.classList.add("blur");
    })
 
     function  closeForm() {
         modalProject.style.display = "none";
         formProject.reset();
+        pagecontent.classList.remove("blur");
     }
     closeButtonProject.addEventListener("click",closeForm);
 
@@ -137,16 +148,28 @@ export default function createUI() {
           const dataIndex = e.target.parentNode.getAttribute("data-index");
           const targetedproject = projectArray.find(item => item.id == dataIndex);
           const index = projectArray.indexOf(targetedproject);
-          if (currentproject == targetedproject) {
+
+          for (let i=0; i<targetedproject.taskarray.length; i++) {
+            let tasktodelete = targetedproject.taskarray[i];
+            allTasks.deleteTask(tasktodelete);
+            today.deleteTask(tasktodelete);
+            thisWeek.deleteTask(tasktodelete);
+            important.deleteTask(tasktodelete);
+          }
+
+         if (currentproject == targetedproject) {
             element.innerHTML = " ";
             table.innerHTML = " ";
             element.innerHTML = "All Tasks";
             currentproject = allTasks;
+            allTasksDiv.classList.add("active");
             displayTasks(currentproject);
+         }
 
-          }
           projectArray.splice(index,1);
           e.target.parentNode.remove();
+
+          
         }
     
     //when click on a project displays it's tasks
@@ -167,11 +190,14 @@ export default function createUI() {
     /*------Modal Task-------*/
     addTaskButton.addEventListener("click", () => {
         modalTask.style.display = "block";
+        pagecontent.classList.add("blur");
    })
 
     function  closeFormTask() {
             modalTask.style.display = "none";
+            pagecontent.classList.remove("blur");
             formTask.reset();
+            editing = false ;
     }
 
     closeButtonTask.addEventListener("click",closeFormTask);
@@ -242,7 +268,9 @@ export default function createUI() {
 
 
    /*------EDİT------- */
-
+   
+   const importance = document.querySelector(".importance");
+    console.log(importance.classList);
 
    table.addEventListener("click", (e)=> {
         if (e.target.classList.contains("edit-button")) {
@@ -300,6 +328,19 @@ export default function createUI() {
                 important.addTask(currentTask);
             }
             
+            const classList = importance.classList;
+            if (classList.length > 0) {
+                const lastAddedClass = classList[classList.length - 1];
+                importance.classList.remove(lastAddedClass);
+              }
+            if (currentTask.importance == "High") {
+                importance.classList.add("task-high");
+              } else if (currentTask.importance == "Medium") {
+                importance.classList.add("task-medium");
+              } else if (currentTask.importance == "Low") {
+                importance.classList.add("task-low");
+              }
+            
             editing = false;
             closeFormTask();
 
@@ -330,12 +371,11 @@ table.addEventListener("click",(e)=>{
 })
 }
 
-
+/** -------MENU-------- */
 const openMenu = document.querySelector(".open_menu");
 const menu = document.querySelector(".menu")
 const pageContent = document.querySelector('.main-place');
 openMenu.addEventListener("click", ()=> {
     menu.classList.toggle("open");
     pageContent.classList.toggle("open");
-    console.log(pageContent.classList);
 })

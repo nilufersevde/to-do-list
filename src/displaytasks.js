@@ -19,11 +19,20 @@ export default function displayTasks(project) {
 
          let importance = row.insertCell(2);
          importance.innerHTML = project.taskarray[i].importance;
-         importance.classList.add("tb");
+         importance.classList.add("importance");
+         if (project.taskarray[i].importance == "High") {
+            importance.classList.add("task-high");
+          } else if (project.taskarray[i].importance == "Medium") {
+            importance.classList.add("task-medium");
+          } else if (project.taskarray[i].importance == "Low") {
+            importance.classList.add("task-low");
+          }
+          console.log(importance.classList)
+         
 
          let dueDate = row.insertCell(3);
          dueDate.innerHTML = project.taskarray[i].dueDate;
-         dueDate.classList.add("tb") 
+        
 
          let details= document.createElement("button");
          details.innerText = "Details";
