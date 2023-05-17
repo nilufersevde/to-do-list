@@ -327,7 +327,8 @@ table {
 }
 
 .row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 50fr 8fr 12fr 1fr 1fr 1fr;
     height:40px;
     font-size: 20px;
     background-color:rgb(246, 246, 246) ;
@@ -342,6 +343,14 @@ table {
     text-align: left;
   }
 
+.importance, .cell {
+    display:flex;
+    justify-content:right;
+    align-items: center;
+}
+
+
+
   input[type="checkbox"] {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -351,7 +360,7 @@ table {
     border: 2px solid rgb(213, 170, 239);
     border-radius: 4px;
     outline: none;
-    transition: all 0.3s ease;
+    transition: all 0.1s ease;
     display:flex;
     justify-content: center;
     align-items: center;
@@ -359,7 +368,7 @@ table {
   }
   
   input[type="checkbox"]:checked {
-    background-color: rgb(213, 170, 239);
+    background-color: rgb(186, 117, 230);
   }
   
   input[type="checkbox"]:not(:checked) {
@@ -376,14 +385,35 @@ table {
   }
 
 
+  .task-high, .task-medium, .task-low {
+    width:85px;
+    height:27px;
+    border-radius:5px;
+    font-size: 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .task-high {
-    color: red;
+    background-color: rgb(220, 2, 2);
+    color:white;
   }
   
   .task-medium {
-    color: yellow;
+    background-color: rgb(217, 196, 36);
+    color:white;
   }
   
   .task-low {
-    color: green;
+    background-color: green;
+    color:white;
+  }
+
+  .details {
+    border:none;
+    padding:5px;
+    background-color:rgb(186, 117, 230);
+    color: white;
   }
