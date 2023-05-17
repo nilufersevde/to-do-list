@@ -4,7 +4,8 @@ export default function displayTasks(project) {
 
      for (let i=table.rows.length; i < project.taskarray.length; i++) {
          let row = table.insertRow(i);
-         row.setAttribute('data-index', i);
+         row.setAttribute('data-index', project.taskarray[i].id);
+         console.log(project.taskarray[i].id);
          row.classList.add("row");
         
         let completecheck = row.insertCell(0);
@@ -27,28 +28,30 @@ export default function displayTasks(project) {
           } else if (project.taskarray[i].importance == "Low") {
             importance.classList.add("task-low");
           }
-          console.log(importance.classList)
-         
 
          let dueDate = row.insertCell(3);
          dueDate.innerHTML = project.taskarray[i].dueDate;
+         dueDate.classList.add("cell")
         
 
-         let details= document.createElement("button");
-         details.innerText = "Details";
+         let details= document.createElement("img");
+
          details.classList.add("details");
          let celldetail = row.insertCell();
          celldetail.appendChild(details);
+         celldetail.classList.add("cell")
 
-         let edit = document.createElement("button");
-         edit.innerText = "edit";
+         let edit = document.createElement("img");
+      
          edit.classList.add("edit-button");
          let celledit = row.insertCell();
          celledit.appendChild(edit);
+         celledit.classList.add("cell")
 
-         let deletebutton = document.createElement("button");
-         deletebutton.innerText = "X";
+         let deletebutton = document.createElement("img");
+         deletebutton.src = "src/bin.png"
          deletebutton.classList.add("delete-button");
          let celldelete = row.insertCell(); 
          celldelete.appendChild(deletebutton);
+         celldelete.classList.add("cell")
      } } 
