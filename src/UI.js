@@ -48,6 +48,7 @@ export default function createUI() {
     const thisWeekDiv = document.querySelector(".thisWeek");
     const importantDiv = document.querySelector(".important");
     allTasksDiv.classList.add("active");
+    let isEventListenerAdded = false;
     
 
    
@@ -81,6 +82,7 @@ export default function createUI() {
             document.querySelector(".active").classList.remove("active")};
             allTasksDiv.classList.add("active");
             element.innerHTML="All Tasks";
+            currentproject = allTasks;
           }
           else if  (e.target==todayDiv||e.target.parentElement==todayDiv) {
             displayTasks(today);
@@ -89,6 +91,7 @@ export default function createUI() {
                 document.querySelector(".active").classList.remove("active")}
             todayDiv.classList.add("active");
             element.innerHTML="Today";
+            currentproject = today;
           }
           else if (e.target==thisWeekDiv ||e.target.parentElement==thisWeekDiv) {
             displayTasks(thisWeek);
@@ -97,6 +100,7 @@ export default function createUI() {
                 document.querySelector(".active").classList.remove("active")}
             thisWeekDiv.classList.add("active");
             element.innerHTML="This week";
+            currentproject = thisWeek;
           }
           else if (e.target==importantDiv||e.target.parentElement==importantDiv){
             displayTasks(important);
@@ -105,6 +109,7 @@ export default function createUI() {
                 document.querySelector(".active").classList.remove("active")}
             importantDiv.classList.add("active");
             element.innerHTML="Important";
+            currentproject = important;
         };
     } })
 
@@ -201,32 +206,37 @@ export default function createUI() {
     }
 
     closeButtonTask.addEventListener("click",closeFormTask);
+    
 
     //creates a task, and displays it in the projects page when submit the task form
     submitButton.addEventListener("click", (e) => {
         e.preventDefault();
         //getting the values from the form
         if (editing == false) {
-        let taskName = document.getElementById("name").value;
-        let taskDescription = document.getElementById("description").value;
-        let taskDueDate = document.getElementById("due-date").value;
-        let taskImportance = document.querySelector('input[name="importance"]:checked').value;
-        const task = createTask(taskName,taskDescription,taskDueDate,taskImportance);
-        //adding task to taskarray
-        currentproject.addTask(task);
-        if (currentproject !==allTasks) {allTasks.addTask(task)};
-        let formattedDate = toDate(new Date(taskDueDate));
-        if (isToday(formattedDate)) {
-            today.addTask(task);
-        }
-        if (isThisWeek(formattedDate)) {
-            thisWeek.addTask(task);
-        }
-        if (taskImportance == "High" ) {
-            important.addTask(task);
-        }
-        closeFormTask();
-        displayTasks(currentproject);
+            if (isEventListenerAdded == true) {
+            submitButton.removeEventListener("click",editTaskSave)}
+            let taskName = document.getElementById("name").value;
+            let taskDescription = document.getElementById("description").value;
+            let taskDueDate = document.getElementById("due-date").value;
+            let taskImportance = document.querySelector('input[name="importance"]:checked').value;
+            const task = createTask(taskName,taskDescription,taskDueDate,taskImportance);
+            //adding task to taskarray
+            currentproject.addTask(task);
+            if (currentproject !==allTasks) {allTasks.addTask(task)};
+            let formattedDate = toDate(new Date(taskDueDate));
+            if (isToday(formattedDate)) {
+                today.addTask(task);
+            }
+            if (isThisWeek(formattedDate)) {
+                thisWeek.addTask(task);
+            }
+            if (taskImportance == "High" ) {
+                important.addTask(task);
+            }
+
+            currentproject.taskID(task);
+            closeFormTask();
+            displayTasks(currentproject);
         }})
     /*--------*/
 
@@ -252,6 +262,8 @@ export default function createUI() {
 
     document.addEventListener("click", function (e) {
 
+        
+
         if (e.target.classList.contains("popup__close")) {
             pop_up.style.display = "none";
           }
@@ -269,15 +281,78 @@ export default function createUI() {
 
    /*------EDİT------- */
    
-   const importance = document.querySelector(".importance");
-    console.log(importance.classList);
+   function editTaskSave(){
 
+    let beforeEditImportance = currentTask.importance;
+    let beforeEditDate = toDate(new Date(currentTask.dueDate));
+
+    currentTask.title = document.getElementById("name").value;
+    currentTask.description = document.getElementById("description").value;;
+    currentTask.dueDate = document.getElementById("due-date").value;
+    currentTask.importance = document.querySelector('input[name="importance"]:checked').value;
+    const rowIndex = currentproject.taskarray.findIndex(item => item.id == dataIndexEdit);
+    table.rows[rowIndex].cells[1].innerHTML = currentTask.title;
+    table.rows[rowIndex].cells[2].innerHTML = currentTask.importance;
+    table.rows[rowIndex].cells[3].innerHTML = currentTask.dueDate;
+
+    let currentDate = toDate(new Date(currentTask.dueDate));
+
+    if ((isToday(beforeEditDate)) && (isToday(currentDate)==false)) {
+        today.deleteTask(currentTask);
+    }
+
+    if ((isThisWeek(beforeEditDate)) && (isThisWeek(currentDate)==false)) {
+        thisWeek.deleteTask(currentTask);
+    }
+    if ((isToday(beforeEditDate)==false) && (isToday(currentDate))) {
+        today.addTask(currentTask);
+    }
+
+    if ((isThisWeek(beforeEditDate)==false) && (isThisWeek(currentDate))) {
+        thisWeek.addTask(currentTask);
+    }
+    if ((beforeEditImportance == "High") & (currentTask.importance != "High")) {
+        important.deleteTask(currentTask);
+    }
+    if ((beforeEditImportance != "High") & (currentTask.importance == "High")) {
+        important.addTask(currentTask);
+    }
+    
+    
+        const importanceCell = table.rows[rowIndex].cells[2];
+        const classList = importanceCell.classList;
+        if (classList.length > 0) {
+            const lastAddedClass = classList[classList.length - 1];
+            importanceCell.classList.remove(lastAddedClass);
+        }
+
+        // Add the appropriate class based on the updated importance
+        if (currentTask.importance == "High") {
+            importanceCell.classList.add("task-high");
+        } else if (currentTask.importance == "Medium") {
+            importanceCell.classList.add("task-medium");
+        } else if (currentTask.importance == "Low") {
+            importanceCell.classList.add("task-low");
+        }
+    
+    currentTask.id = dataIndexEdit;
+    submitButton.removeEventListener("click", editTaskSaveHandler)
+    editing = false;
+    closeFormTask();
+    
+
+}
+
+   let editTaskSaveHandler = null;  
+   let dataIndexEdit = " "
    table.addEventListener("click", (e)=> {
         if (e.target.classList.contains("edit-button")) {
             editing = true;
             modalTask.style.display = "block";
-            const dataIndex = e.target.parentNode.parentNode.getAttribute("data-index");
-            currentTask = currentproject.taskarray.find(item => item.id == dataIndex);
+            dataIndexEdit = e.target.parentNode.parentNode.getAttribute("data-index");
+            console.log(dataIndexEdit);
+            console.log(currentproject.taskarray);
+            currentTask = currentproject.taskarray.find(item => item.id == dataIndexEdit);
             document.getElementById("name").value = currentTask.title;
             document.getElementById("description").value = currentTask.description;
             document.getElementById("due-date").value = currentTask.dueDate;
@@ -291,65 +366,17 @@ export default function createUI() {
                 document.formTask.importance[2].checked = true;
             }
 
-            let beforeEditImportance = currentTask.importance;
-
-            let beforeEditDate = toDate(new Date(currentTask.dueDate));
-
-        submitButton.addEventListener("click", editTaskSave)
-        function editTaskSave(){
-            currentTask.title = document.getElementById("name").value;
-            currentTask.description = document.getElementById("description").value;;
-            currentTask.dueDate = document.getElementById("due-date").value;
-            currentTask.importance = document.querySelector('input[name="importance"]:checked').value;
-            table.rows[dataIndex].cells[1].innerHTML = currentTask.title;
-            table.rows[dataIndex].cells[2].innerHTML = currentTask.importance;
-            table.rows[dataIndex].cells[3].innerHTML = currentTask.dueDate;
-
-            let currentDate = toDate(new Date(currentTask.dueDate));
-
-            if ((isToday(beforeEditDate)) && (isToday(currentDate)==false)) {
-                today.deleteTask(currentTask);
-            }
-
-            if ((isThisWeek(beforeEditDate)) && (isThisWeek(currentDate)==false)) {
-                thisWeek.deleteTask(currentTask);
-            }
-            if ((isToday(beforeEditDate)==false) && (isToday(currentDate))) {
-                today.addTask(currentTask);
-            }
-
-            if ((isThisWeek(beforeEditDate)==false) && (isThisWeek(currentDate))) {
-                thisWeek.addTask(currentTask);
-            }
-            if ((beforeEditImportance == "High") & (currentTask.importance != "High")) {
-                important.deleteTask(currentTask);
-            }
-            if ((beforeEditImportance != "High") & (currentTask.importance == "High")) {
-                important.addTask(currentTask);
-            }
-            
-            const classList = importance.classList;
-            if (classList.length > 0) {
-                const lastAddedClass = classList[classList.length - 1];
-                importance.classList.remove(lastAddedClass);
+            if (editTaskSaveHandler) {
+                submitButton.removeEventListener("click", editTaskSaveHandler);
               }
-            if (currentTask.importance == "High") {
-                importance.classList.add("task-high");
-              } else if (currentTask.importance == "Medium") {
-                importance.classList.add("task-medium");
-              } else if (currentTask.importance == "Low") {
-                importance.classList.add("task-low");
-              }
-            
-            editing = false;
-            closeFormTask();
-
-            if (editing == false) {
-                submitButton.removeEventListener("click",biseyler)
-            }
-        }
-
-        //
+          
+              // Assign the new event listener function to the variable
+              editTaskSaveHandler = () => {
+                editTaskSave();
+              };
+          
+              submitButton.addEventListener("click", editTaskSaveHandler);
+        isEventListenerAdded = true;
 }})
 
 /*------------ */
@@ -362,14 +389,19 @@ table.addEventListener("click",(e)=>{
         const dataIndex = e.target.parentNode.parentNode.getAttribute("data-index");
         currentTask = currentproject.taskarray.find(item => item.id == dataIndex);
         currentproject.deleteTask(currentTask);
-        allTasks.deleteTask(currentTask);
-        today.deleteTask(currentTask);
-        thisWeek.deleteTask(currentTask);
-        important.deleteTask(currentTask);
-        e.target.parentNode.parentNode.remove();}
+        if (currentproject != allTasks) {
+        allTasks.deleteTask(currentTask)};
+        if (currentproject != today) {
+        today.deleteTask(currentTask)};
+        if (currentproject != thisWeek){
+        thisWeek.deleteTask(currentTask)};
+        if (currentproject != important){
+        important.deleteTask(currentTask)};
+        e.target.parentNode.parentNode.remove();
+        currentTask = null;}
 
-})
-}
+})   }
+
 
 /** -------MENU-------- */
 const openMenu = document.querySelector(".open_menu");
