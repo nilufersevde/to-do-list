@@ -8,7 +8,6 @@ import {
   } from "date-fns";
 
 import createTask from "./createtask";
-
 //creating and displaying projects
 
 export default function createUI() {
@@ -31,6 +30,7 @@ export default function createUI() {
     let element = document.createElement("div");
     element.classList.add("project-header-place")
     const addTaskButton = document.createElement("button");
+    const pop_up_place = document.querySelector(".pop-up-place") 
     addTaskButton.innerText = "+" ;
     addTaskButton.classList.add("addPage");
     addTaskButton.classList.add("addTaskButton");
@@ -61,11 +61,29 @@ export default function createUI() {
     const thisWeek = createProjec("This week");
     const important = createProjec("important");
 
-    const projectArray = [];
+    let projectArray = [];
     let currentproject = allTasks;
 
+    // Retrieve projectArray from local storage
+    const storedProjectArray = localStorage.getItem("projectArray");
+
+    if (storedProjectArray) {
+        projectArray = JSON.parse(storedProjectArray);
+        projectArray.forEach((project) => {
+            const { id, title, taskarray } = project;
+            const p = createProjec(title);
+            p.id = id;
+            p.taskarray = taskarray;
+            project.addTask = p.addTask;
+            project.taskID = p.taskID;
+            project.deleteTask = p.deleteTask;
+        });
+      }
+
+    // Display projects
     displayProjects(projectArray);
-    displayTasks(currentproject);
+
+    displayTasks(allTasks);
     element.innerHTML = "All Tasks";
     addTaskButton.style.visibility = "visible";
     
@@ -136,8 +154,9 @@ export default function createUI() {
         let projectTitle = document.getElementById("title").value;
         const project = createProjec(projectTitle);
         projectArray.push(project);
-        project.id = projectArray.indexOf(project);//fixing the index with id in case removing another project changes it
+        localStorage.setItem("projectArray", JSON.stringify(projectArray));
         displayProjects(projectArray);
+        project.projectID();
         closeForm();
         }
     )
@@ -155,6 +174,10 @@ export default function createUI() {
           const index = projectArray.indexOf(targetedproject);
 
           for (let i=0; i<targetedproject.taskarray.length; i++) {
+            const storedTaskArray = localStorage.getItem("taskarray");
+            if (storedTaskArray) {
+            taskarray = JSON.parse(storedTaskArray);
+            }
             let tasktodelete = targetedproject.taskarray[i];
             allTasks.deleteTask(tasktodelete);
             today.deleteTask(tasktodelete);
@@ -185,6 +208,7 @@ export default function createUI() {
           document.querySelector(".active").classList.remove("active");
           e.target.classList.add("active");
           currentproject = projectArray.find(item => item.id == dataIndex);
+          console.log(projectArray);
           element.innerText = currentproject.title;
           addTaskButton.style.visibility = "visible";
           displayTasks(currentproject);
@@ -219,24 +243,26 @@ export default function createUI() {
             let taskDescription = document.getElementById("description").value;
             let taskDueDate = document.getElementById("due-date").value;
             let taskImportance = document.querySelector('input[name="importance"]:checked').value;
-            const task = createTask(taskName,taskDescription,taskDueDate,taskImportance);
+            let taskProject = currentproject.title;
+            const task = createTask(taskName,taskDescription,taskDueDate,taskImportance, taskProject);
             //adding task to taskarray
-            currentproject.addTask(task);
+            currentproject.addTask(currentproect.title, task);
             if (currentproject !==allTasks) {allTasks.addTask(task)};
             let formattedDate = toDate(new Date(taskDueDate));
             if (isToday(formattedDate)) {
-                today.addTask(task);
+                today.addTask(today.title,task);
             }
             if (isThisWeek(formattedDate)) {
-                thisWeek.addTask(task);
+                thisWeek.addTask(thisWeek.title,task);
             }
             if (taskImportance == "High" ) {
-                important.addTask(task);
+                important.addTask(important.title, task);
             }
-
-            currentproject.taskID(task);
+            console.log(currentproject.taskarray);
+            currentproject.taskID();
             closeFormTask();
             displayTasks(currentproject);
+            
         }})
     /*--------*/
 
@@ -244,15 +270,17 @@ export default function createUI() {
     /*----Pop up form for the task details ----*/
     let pop_up = document.createElement("div");
     pop_up.classList.add = "pop-up";
-    mainPlace.appendChild(pop_up);
+    pop_up_place.appendChild(pop_up);
     pop_up.style.display = "none";
     function openPopUp(currentTask) {
         pop_up.style.display = "block";
+        pagecontent.classList.add("blur");
         pop_up.innerHTML = `
-         <div class="popup">
+         <div class="pop-up-div">
             <div class="popup__close">X</div>
             <div class="popup__content">
             	<div class="popup title">${currentTask.title}</div>
+                <div class="popup details"><span>Project: </span>${currentTask.project}</div>
             	<div class="popup priority"><span>Priority: </span>${currentTask.importance}</div>
             	<div class="popup due"><span>Due Date: </span>${currentTask.dueDate}</div>
             	<div class="popup details"><span>Description: </span>${currentTask.description}</div>
@@ -266,6 +294,7 @@ export default function createUI() {
 
         if (e.target.classList.contains("popup__close")) {
             pop_up.style.display = "none";
+            pagecontent.classList.remove("blur");
           }
 
         if (e.target.classList.contains("details")) {
@@ -336,7 +365,8 @@ export default function createUI() {
         }
     
     currentTask.id = dataIndexEdit;
-    submitButton.removeEventListener("click", editTaskSaveHandler)
+    submitButton.removeEventListener("click", editTaskSaveHandler);
+    pagecontent.classList.remove("blur");
     editing = false;
     closeFormTask();
     
@@ -347,11 +377,10 @@ export default function createUI() {
    let dataIndexEdit = " "
    table.addEventListener("click", (e)=> {
         if (e.target.classList.contains("edit-button")) {
+            pagecontent.classList.add("blur");
             editing = true;
             modalTask.style.display = "block";
             dataIndexEdit = e.target.parentNode.parentNode.getAttribute("data-index");
-            console.log(dataIndexEdit);
-            console.log(currentproject.taskarray);
             currentTask = currentproject.taskarray.find(item => item.id == dataIndexEdit);
             document.getElementById("name").value = currentTask.title;
             document.getElementById("description").value = currentTask.description;
@@ -379,7 +408,7 @@ export default function createUI() {
         isEventListenerAdded = true;
 }})
 
-/*------------ */
+/*------------*/
 
 
 /*-----Delete Task----- */

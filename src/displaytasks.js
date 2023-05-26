@@ -1,6 +1,11 @@
 export default function displayTasks(project) {
-
-     let table = document.querySelector("table");
+    
+    let table = document.querySelector("table");
+    let id=project.id
+    const storedTaskArray = localStorage.getItem(`taskarray_${id}`);
+    if (storedTaskArray) {
+        project.taskarray = JSON.parse(storedTaskArray);
+    }
 
      for (let i=table.rows.length; i < project.taskarray.length; i++) {
          let row = table.insertRow(i);
@@ -11,7 +16,7 @@ export default function displayTasks(project) {
         let completecheck = row.insertCell(0);
         completecheck.innerHTML = `
         <label for="accept">
-            <input type="checkbox" id="check" name="check" value="yes"></input>
+            <input type="checkbox" class="check" name="check"></input>
         </label>` 
 
          let title = row.insertCell(1);
@@ -35,23 +40,38 @@ export default function displayTasks(project) {
         
 
          let details= document.createElement("img");
-
          details.classList.add("details");
+         details.src = "images/file.png" 
          let celldetail = row.insertCell();
          celldetail.appendChild(details);
          celldetail.classList.add("cell")
 
          let edit = document.createElement("img");
-      
          edit.classList.add("edit-button");
+         edit.src = "images/edit.png"
          let celledit = row.insertCell();
          celledit.appendChild(edit);
          celledit.classList.add("cell")
 
          let deletebutton = document.createElement("img");
-         deletebutton.src = "src/bin.png"
+         deletebutton.src = "images/bin.png"
          deletebutton.classList.add("delete-button");
          let celldelete = row.insertCell(); 
          celldelete.appendChild(deletebutton);
          celldelete.classList.add("cell")
+
+        const checkboxes = table.querySelectorAll('.check');
+        checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', function() {
+        let title1 = this.closest('.row').querySelector('.tb');
+        let row1 =this.closest('.row');
+        if (checkbox.checked) {
+          title1.classList.add('crossed-out', 'slanted');
+          row1.classList.add("opacity")
+        } else {
+          title1.classList.remove('crossed-out', 'slanted');
+          row1.classList.remove("opacity")
+      }
+    });
+  });
      } } 
