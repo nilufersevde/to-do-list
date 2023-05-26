@@ -76,7 +76,7 @@
 
 .project-list {
     margin-top:10px;
-   font-size:17px;
+   font-size:19px;
    margin-left:30px; 
    display:flex;
    flex-direction: column;
@@ -94,14 +94,19 @@
 
 .project_element {
     display:flex;
-    gap:10px;
+    justify-content: space-between;
     background-color: white;
     border-radius: 6px;
     padding:7px;
-    display:block;
     word-wrap:break-word;
     font-weight: 400;
     border: 1px solid transparent;
+    align-items: center;
+}
+
+.delete-button-project {
+    height:21px;
+    width:18px;
 }
 
 
@@ -220,7 +225,7 @@ img {
     align-items: center;
 }
 
-.close-modal-project,.close-modal-task {
+.close-modal-project,.close-modal-task{
     position: absolute;
     top: 12px;
     right: 12px;
@@ -338,6 +343,24 @@ table {
     margin:10px;
 }
 
+.row:hover {
+    box-shadow:2px 2px 4px rgba(0, 0, 0, 0.200);
+    transform: scale(1.01); 
+}
+
+.crossed-out {
+    text-decoration: line-through;
+    text-decoration-color: rgba(0, 0, 0, 0.5);
+  }
+  
+.slanted {
+    font-style: italic;
+}
+
+.opacity {
+    opacity:0.7;
+}
+
 .tb {
     flex: 1;
     text-align: left;
@@ -345,11 +368,18 @@ table {
 
 .importance, .cell {
     display:flex;
-    justify-content:right;
+    justify-content:center;
     align-items: center;
 }
 
+.edit-button, .delete-button, .details {
+    cursor: pointer;
+}
 
+input[type="checkbox"]:checked ~ .tb {
+    text-decoration: line-through;
+    transform: rotate(-10deg);
+  }
 
   input[type="checkbox"] {
     -webkit-appearance: none;
@@ -357,7 +387,7 @@ table {
     appearance: none;
     width: 22px;
     height: 22px;
-    border: 2px solid rgb(213, 170, 239);
+    border: 2px solid rgb(186, 117, 230);
     border-radius: 4px;
     outline: none;
     transition: all 0.1s ease;
@@ -386,10 +416,10 @@ table {
 
 
   .task-high, .task-medium, .task-low {
-    width:85px;
-    height:27px;
+    width:70px;
+    height:25px;
     border-radius:5px;
-    font-size: 20px;
+    font-size: 15px;
     text-align: center;
     display: flex;
     align-items: center;
@@ -411,9 +441,52 @@ table {
     color:white;
   }
 
-  .details {
-    border:none;
-    padding:5px;
-    background-color:rgb(186, 117, 230);
+  
+/*-------DETAILS-------*/
+
+.pop-up-div {
+    position:absolute;
+    top:200px;
+    left:540px;
+    font-family: 'Karla', sans-serif;
+    padding-left: 29px;
+    padding-right: 29px;
+    padding-top: 25px;
+    padding-bottom: 20px;
+    width:300px;
+    height:auto;
+    justify-content: center;
+    align-items: center;
+    font-size:20px;
+    background-color: #44799a;
     color: white;
+    border-radius: 10px;
+    border:3px solid rgb(76, 140, 179);
+    word-wrap:break-word;
+    gap:10px;
+}
+
+.popup.title {
+    font-size:25px;
+    margin-bottom: 10px;
+    text-align: center;
+    border-bottom:1px solid white;
+    padding-bottom: 5px;
+}
+
+.popup {
+    margin-bottom: 10px;
+}
+
+.popup__close{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 19px;
+    cursor: pointer;
+    color:black;
   }
+
+
