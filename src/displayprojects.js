@@ -8,7 +8,7 @@ export default function displayProjects(projectArray) {
         element.innerText = projectArray[i].title;
         element.classList.add("project_element");
         //setting data-index to easily find the element in the projectArray
-        element.setAttribute('data-index', i+4); //because of the default projects 
+        element.setAttribute('data-index', projectArray[i].id); //because of the default projects 
         projectList.appendChild(element);
         //adding delete button to project element 
         let deletebutton = document.createElement("img");

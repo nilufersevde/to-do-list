@@ -8,7 +8,10 @@ import {
   } from "date-fns";
 
 import createTask from "./createtask";
+
+
 //creating and displaying projects
+
 
 export default function createUI() {
    
@@ -51,9 +54,6 @@ export default function createUI() {
     let isEventListenerAdded = false;
     
 
-   
-
-
     /*----Default Projects----- */
 
     const allTasks = createProjec("All tasks");
@@ -71,12 +71,15 @@ export default function createUI() {
         projectArray = JSON.parse(storedProjectArray);
         projectArray.forEach((project) => {
             const { id, title, taskarray } = project;
+            if (id === currentproject.id) {
+                currentproject = project;
+            }
             const p = createProjec(title);
             p.id = id;
             p.taskarray = taskarray;
-            project.addTask = p.addTask;
+            project.addTask = p.addTask.bind(project);
             project.taskID = p.taskID;
-            project.deleteTask = p.deleteTask;
+            project.deleteTask = p.deleteTask.bind(project);
         });
       }
 
@@ -174,15 +177,20 @@ export default function createUI() {
           const index = projectArray.indexOf(targetedproject);
 
           for (let i=0; i<targetedproject.taskarray.length; i++) {
-            const storedTaskArray = localStorage.getItem("taskarray");
+            const storedTaskArray = localStorage.getItem(`taskarray_${dataIndex}`);
             if (storedTaskArray) {
-            taskarray = JSON.parse(storedTaskArray);
+            targetedproject.taskarray = JSON.parse(storedTaskArray);
             }
             let tasktodelete = targetedproject.taskarray[i];
             allTasks.deleteTask(tasktodelete);
             today.deleteTask(tasktodelete);
             thisWeek.deleteTask(tasktodelete);
             important.deleteTask(tasktodelete);
+
+            localStorage.setItem(`taskarray_${"All tasks"}`, JSON.stringify(allTasks.taskarray));
+            localStorage.setItem(`taskarray_${"today"}`, JSON.stringify(today.taskarray));
+            localStorage.setItem(`taskarray_${"This week"}`, JSON.stringify(thisWeek.taskarray));
+            localStorage.setItem(`taskarray_${"important"}`, JSON.stringify(important.taskarray));
           }
 
          if (currentproject == targetedproject) {
@@ -196,7 +204,7 @@ export default function createUI() {
 
           projectArray.splice(index,1);
           e.target.parentNode.remove();
-
+          localStorage.setItem("projectArray", JSON.stringify(projectArray));
           
         }
     
@@ -208,7 +216,7 @@ export default function createUI() {
           document.querySelector(".active").classList.remove("active");
           e.target.classList.add("active");
           currentproject = projectArray.find(item => item.id == dataIndex);
-          console.log(projectArray);
+          
           element.innerText = currentproject.title;
           addTaskButton.style.visibility = "visible";
           displayTasks(currentproject);
@@ -238,7 +246,7 @@ export default function createUI() {
         //getting the values from the form
         if (editing == false) {
             if (isEventListenerAdded == true) {
-            submitButton.removeEventListener("click",editTaskSave)}
+            submitButton.removeEventListener("click",editTaskSave)}//removing the Event Listener for the editing if it was added
             let taskName = document.getElementById("name").value;
             let taskDescription = document.getElementById("description").value;
             let taskDueDate = document.getElementById("due-date").value;
@@ -246,23 +254,22 @@ export default function createUI() {
             let taskProject = currentproject.title;
             const task = createTask(taskName,taskDescription,taskDueDate,taskImportance, taskProject);
             //adding task to taskarray
-            currentproject.addTask(currentproect.title, task);
+            currentproject.addTask(task);
+            console.log("current project task array when click to submit button",currentproject);
             if (currentproject !==allTasks) {allTasks.addTask(task)};
             let formattedDate = toDate(new Date(taskDueDate));
             if (isToday(formattedDate)) {
-                today.addTask(today.title,task);
+                today.addTask(task);
             }
             if (isThisWeek(formattedDate)) {
-                thisWeek.addTask(thisWeek.title,task);
+                thisWeek.addTask(task);
             }
             if (taskImportance == "High" ) {
-                important.addTask(important.title, task);
+                important.addTask(task);
             }
-            console.log(currentproject.taskarray);
             currentproject.taskID();
             closeFormTask();
             displayTasks(currentproject);
-            
         }})
     /*--------*/
 
@@ -355,7 +362,7 @@ export default function createUI() {
             importanceCell.classList.remove(lastAddedClass);
         }
 
-        // Add the appropriate class based on the updated importance
+        // Add the appropriate class based on the updated importance(for red,green or yellow background)
         if (currentTask.importance == "High") {
             importanceCell.classList.add("task-high");
         } else if (currentTask.importance == "Medium") {
@@ -363,14 +370,38 @@ export default function createUI() {
         } else if (currentTask.importance == "Low") {
             importanceCell.classList.add("task-low");
         }
+
+        //updating the default projects after editing the task 
+        const allTasksIndex = allTasks.taskarray.findIndex(item => item.id == currentTask.id);
+        allTasks.taskarray[allTasksIndex] = currentTask;
+
+        const todayIndex = today.taskarray.findIndex(item => item.id == currentTask.id);
+        if (todayIndex !== -1) {
+                today.taskarray[todayIndex] = currentTask;
+        }
+
+        const thisWeekIndex = thisWeek.taskarray.findIndex(item => item.id == currentTask.id);
+        if (thisWeekIndex !== -1) {
+            thisWeek.taskarray[thisWeekIndex] = currentTask;
+        }
+        const importantIndex = important.taskarray.findIndex(item => item.id == currentTask.id);
+        if (importantIndex !== -1) {
+            important.taskarray[importantIndex] = currentTask;
+        }
+
+        localStorage.setItem(`taskarray_${currentproject.title}`, JSON.stringify(currentproject.taskarray));
+        localStorage.setItem(`taskarray_${"All tasks"}`, JSON.stringify(allTasks.taskarray));
+        localStorage.setItem(`taskarray_${"today"}`, JSON.stringify(today.taskarray));
+        localStorage.setItem(`taskarray_${"This week"}`, JSON.stringify(thisWeek.taskarray));
+        localStorage.setItem(`taskarray_${"important"}`, JSON.stringify(important.taskarray));
+        
     
     currentTask.id = dataIndexEdit;
-    submitButton.removeEventListener("click", editTaskSaveHandler);
+    submitButton.removeEventListener("click", editTaskSaveHandler);//
     pagecontent.classList.remove("blur");
     editing = false;
     closeFormTask();
     
-
 }
 
    let editTaskSaveHandler = null;  

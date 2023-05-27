@@ -1,16 +1,17 @@
 export default function displayTasks(project) {
     
     let table = document.querySelector("table");
-    let id=project.id
-    const storedTaskArray = localStorage.getItem(`taskarray_${id}`);
+    let id = project.id
+    const storedTaskArray = localStorage.getItem(`taskarray_${project.title}`);
+    
     if (storedTaskArray) {
         project.taskarray = JSON.parse(storedTaskArray);
+        console.log("displaytasksteki task array",`taskarray_${project.title}`,project.taskarray, project);
     }
 
      for (let i=table.rows.length; i < project.taskarray.length; i++) {
          let row = table.insertRow(i);
          row.setAttribute('data-index', project.taskarray[i].id);
-         console.log(project.taskarray[i].id);
          row.classList.add("row");
         
         let completecheck = row.insertCell(0);
