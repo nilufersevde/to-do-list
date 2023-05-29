@@ -30,12 +30,19 @@ export default function createProjec(title) {
     taskId = JSON.parse(storedTaskId);
   } 
 
-  let addTask = function addTask(task) {
-    taskarray.push(task);
-    console.log("addTaskteki task array", taskarray, id);
+
+  let addTask = function addTask(projectid, task) {
+    const storedTaskArray = localStorage.getItem(`taskarray_${projectid}`);
+    console.log(storedTaskArray)
+    if (storedTaskArray) {
+      taskarray = JSON.parse(storedTaskArray);
+    }
+    const updatedTaskArray = [...taskarray, task]; // Create a new array by spreading the existing taskarray
+    console.log("addTaskteki task array", `taskarray_${projectid}`, updatedTaskArray, projectid);
     task.id = taskId;
-    localStorage.setItem(`taskarray_${title}`, JSON.stringify(taskarray));
+    localStorage.setItem(`taskarray_${projectid}`, JSON.stringify(updatedTaskArray));
   }
+
 
   let taskID = function taskID() {
     taskId++;
@@ -47,23 +54,20 @@ export default function createProjec(title) {
     localStorage.setItem("projectId", JSON.stringify(projectId));
   }
 
-  let deleteTask = function deleteTask(task) {
-    const index = taskarray.indexOf(task);
-    taskarray.splice(index, 1);
-    localStorage.setItem(`taskarray_${title}}`, JSON.stringify(taskarray));
-  }
-
-  let loadTaskArray = function loadTaskArray() {
-    const storedTaskArray = localStorage.getItem(`taskarray_${id}`);
+  let deleteTask = function deleteTask(projectid, task) {
+    const storedTaskArray = localStorage.getItem(`taskarray_${projectid}`);
+    console.log(storedTaskArray)
     if (storedTaskArray) {
       taskarray = JSON.parse(storedTaskArray);
     }
+    const index = taskarray.findIndex(item => item.id === task.id);
+    if (index !== -1) {
+      taskarray.splice(index, 1);
+      localStorage.setItem(`taskarray_${projectid}`, JSON.stringify(taskarray));
+    }
   }
 
-  // Call the loadTaskArray function to retrieve and assign the task array
-  loadTaskArray();
-
-
+  
   return {
     id,
     title,

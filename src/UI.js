@@ -1,14 +1,14 @@
 import createProjec from "./createproject";
 import displayTasks from "./displaytasks";
 import displayProjects from "./displayprojects";
+import createTask from "./createtask";
 import {
     isToday,
     toDate,
     isThisWeek,
   } from "date-fns";
 
-import createTask from "./createtask";
-
+localStorage.clear();
 
 //creating and displaying projects
 
@@ -61,27 +61,30 @@ export default function createUI() {
     const thisWeek = createProjec("This week");
     const important = createProjec("important");
 
-    let projectArray = [];
+    let projectArray = []; //creating the project array to add the newly created projects
     let currentproject = allTasks;
 
     // Retrieve projectArray from local storage
     const storedProjectArray = localStorage.getItem("projectArray");
 
     if (storedProjectArray) {
-        projectArray = JSON.parse(storedProjectArray);
-        projectArray.forEach((project) => {
-            const { id, title, taskarray } = project;
-            if (id === currentproject.id) {
-                currentproject = project;
-            }
-            const p = createProjec(title);
-            p.id = id;
-            p.taskarray = taskarray;
-            project.addTask = p.addTask.bind(project);
-            project.taskID = p.taskID;
-            project.deleteTask = p.deleteTask.bind(project);
-        });
-      }
+    projectArray = JSON.parse(storedProjectArray);
+    projectArray.forEach((project, index) => { // Add the index parameter
+        const { id, title, taskarray } = project;
+        const p = createProjec(title);
+        p.id = id;
+        p.taskarray = taskarray;
+
+        // Replace the project in projectArray with the modified project
+        projectArray[index] = p;
+    });
+    }
+
+    // Convert projectArray to a plain array before storing it in local storage
+    const projectsToStore = Object.values(projectArray);
+
+    // Store the updated projectArray in local storage
+    localStorage.setItem("projectArray", JSON.stringify(projectsToStore));
 
     // Display projects
     displayProjects(projectArray);
@@ -182,10 +185,10 @@ export default function createUI() {
             targetedproject.taskarray = JSON.parse(storedTaskArray);
             }
             let tasktodelete = targetedproject.taskarray[i];
-            allTasks.deleteTask(tasktodelete);
-            today.deleteTask(tasktodelete);
-            thisWeek.deleteTask(tasktodelete);
-            important.deleteTask(tasktodelete);
+            allTasks.deleteTask(0,tasktodelete);
+            today.deleteTask(1,tasktodelete);
+            thisWeek.deleteTask(2,tasktodelete);
+            important.deleteTask(3,tasktodelete);
 
             localStorage.setItem(`taskarray_${"All tasks"}`, JSON.stringify(allTasks.taskarray));
             localStorage.setItem(`taskarray_${"today"}`, JSON.stringify(today.taskarray));
@@ -254,18 +257,17 @@ export default function createUI() {
             let taskProject = currentproject.title;
             const task = createTask(taskName,taskDescription,taskDueDate,taskImportance, taskProject);
             //adding task to taskarray
-            currentproject.addTask(task);
-            console.log("current project task array when click to submit button",currentproject);
-            if (currentproject !==allTasks) {allTasks.addTask(task)};
+            currentproject.addTask(currentproject.id,task);
+            if (currentproject !==allTasks) {allTasks.addTask(0,task)};
             let formattedDate = toDate(new Date(taskDueDate));
             if (isToday(formattedDate)) {
-                today.addTask(task);
+                today.addTask(1,task);
             }
             if (isThisWeek(formattedDate)) {
-                thisWeek.addTask(task);
+                thisWeek.addTask(2,task);
             }
             if (taskImportance == "High" ) {
-                important.addTask(task);
+                important.addTask(3,task);
             }
             currentproject.taskID();
             closeFormTask();
@@ -319,41 +321,43 @@ export default function createUI() {
    
    function editTaskSave(){
 
-    let beforeEditImportance = currentTask.importance;
-    let beforeEditDate = toDate(new Date(currentTask.dueDate));
+        let beforeEditImportance = currentTask.importance;
+        let beforeEditDate = toDate(new Date(currentTask.dueDate));
 
-    currentTask.title = document.getElementById("name").value;
-    currentTask.description = document.getElementById("description").value;;
-    currentTask.dueDate = document.getElementById("due-date").value;
-    currentTask.importance = document.querySelector('input[name="importance"]:checked').value;
-    const rowIndex = currentproject.taskarray.findIndex(item => item.id == dataIndexEdit);
-    table.rows[rowIndex].cells[1].innerHTML = currentTask.title;
-    table.rows[rowIndex].cells[2].innerHTML = currentTask.importance;
-    table.rows[rowIndex].cells[3].innerHTML = currentTask.dueDate;
+        currentTask.title = document.getElementById("name").value;
+        currentTask.description = document.getElementById("description").value;;
+        currentTask.dueDate = document.getElementById("due-date").value;
+        currentTask.importance = document.querySelector('input[name="importance"]:checked').value;
+        const rowIndex = currentproject.taskarray.findIndex(item => item.id == dataIndexEdit);
+        table.rows[rowIndex].cells[1].innerHTML = currentTask.title;
+        table.rows[rowIndex].cells[2].innerHTML = currentTask.importance;
+        table.rows[rowIndex].cells[3].innerHTML = currentTask.dueDate;
 
-    let currentDate = toDate(new Date(currentTask.dueDate));
+        let currentDate = toDate(new Date(currentTask.dueDate));
 
-    if ((isToday(beforeEditDate)) && (isToday(currentDate)==false)) {
-        today.deleteTask(currentTask);
-    }
 
-    if ((isThisWeek(beforeEditDate)) && (isThisWeek(currentDate)==false)) {
-        thisWeek.deleteTask(currentTask);
-    }
-    if ((isToday(beforeEditDate)==false) && (isToday(currentDate))) {
-        today.addTask(currentTask);
-    }
+        //deleting or adding tasks to the default projects depending on the editing 
+        if ((isToday(beforeEditDate)) && (isToday(currentDate)==false)) {
+            today.deleteTask(1,currentTask);
+        }
 
-    if ((isThisWeek(beforeEditDate)==false) && (isThisWeek(currentDate))) {
-        thisWeek.addTask(currentTask);
-    }
-    if ((beforeEditImportance == "High") & (currentTask.importance != "High")) {
-        important.deleteTask(currentTask);
-    }
-    if ((beforeEditImportance != "High") & (currentTask.importance == "High")) {
-        important.addTask(currentTask);
-    }
-    
+        if ((isThisWeek(beforeEditDate)) && (isThisWeek(currentDate)==false)) {
+            thisWeek.deleteTask(2,currentTask);
+        }
+        if ((isToday(beforeEditDate)==false) && (isToday(currentDate))) {
+            today.addTask(today.id,currentTask);
+        }
+
+        if ((isThisWeek(beforeEditDate)==false) && (isThisWeek(currentDate))) {
+            thisWeek.addTask(thisWeek.id,currentTask);
+        }
+        if ((beforeEditImportance == "High") & (currentTask.importance != "High")) {
+            important.deleteTask(3,currentTask);
+        }
+        if ((beforeEditImportance != "High") & (currentTask.importance == "High")) {
+            important.addTask(important.id,currentTask);
+        }
+        
     
         const importanceCell = table.rows[rowIndex].cells[2];
         const classList = importanceCell.classList;
@@ -388,7 +392,8 @@ export default function createUI() {
         if (importantIndex !== -1) {
             important.taskarray[importantIndex] = currentTask;
         }
-
+        
+        //updating the local storage of the projects 
         localStorage.setItem(`taskarray_${currentproject.title}`, JSON.stringify(currentproject.taskarray));
         localStorage.setItem(`taskarray_${"All tasks"}`, JSON.stringify(allTasks.taskarray));
         localStorage.setItem(`taskarray_${"today"}`, JSON.stringify(today.taskarray));
@@ -396,13 +401,13 @@ export default function createUI() {
         localStorage.setItem(`taskarray_${"important"}`, JSON.stringify(important.taskarray));
         
     
-    currentTask.id = dataIndexEdit;
-    submitButton.removeEventListener("click", editTaskSaveHandler);//
-    pagecontent.classList.remove("blur");
-    editing = false;
-    closeFormTask();
-    
-}
+        currentTask.id = dataIndexEdit;
+        submitButton.removeEventListener("click", editTaskSaveHandler);//removing the event listener since we will add it the next time when click on the edit button 
+        pagecontent.classList.remove("blur");
+        editing = false;
+        closeFormTask();
+        
+    }
 
    let editTaskSaveHandler = null;  
    let dataIndexEdit = " "
@@ -448,15 +453,15 @@ table.addEventListener("click",(e)=>{
     if (e.target.classList.contains("delete-button")) {
         const dataIndex = e.target.parentNode.parentNode.getAttribute("data-index");
         currentTask = currentproject.taskarray.find(item => item.id == dataIndex);
-        currentproject.deleteTask(currentTask);
+        currentproject.deleteTask(currentproject.id,currentTask);
         if (currentproject != allTasks) {
-        allTasks.deleteTask(currentTask)};
+        allTasks.deleteTask(0,currentTask)};
         if (currentproject != today) {
-        today.deleteTask(currentTask)};
+        today.deleteTask(1,currentTask)};
         if (currentproject != thisWeek){
-        thisWeek.deleteTask(currentTask)};
+        thisWeek.deleteTask(2,currentTask)};
         if (currentproject != important){
-        important.deleteTask(currentTask)};
+        important.deleteTask(3,currentTask)};
         e.target.parentNode.parentNode.remove();
         currentTask = null;}
 
