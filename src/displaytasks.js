@@ -4,8 +4,7 @@ export default function displayTasks(project) {
     const storedTaskArray = localStorage.getItem(`taskarray_${project.id}`);
     
     if (storedTaskArray) {
-        project.taskarray = JSON.parse(storedTaskArray);
-        console.log("displaytasksteki task array",`taskarray_${project.id}`,project.taskarray, storedTaskArray);
+        project.taskarray = JSON.parse(storedTaskArray); 
     }
 
     for (let i=table.rows.length; i < project.taskarray.length; i++) {
@@ -18,6 +17,10 @@ export default function displayTasks(project) {
         <label for="accept">
             <input type="checkbox" class="check" name="check"></input>
         </label>` 
+        const checkbox = document.querySelector('.check');
+        if ( project.taskarray[i].completed == true) {
+          checkbox.checked = true;
+        }
 
          let title = row.insertCell(1);
          title.innerHTML = project.taskarray[i].title;
@@ -74,4 +77,6 @@ export default function displayTasks(project) {
       }
     });
   });
-     } } 
+     } 
+    
+     ;} 

@@ -1,7 +1,6 @@
 let taskId = 0;
 let projectId = 4; //because of the default projects 
 
-
 export default function createProjec(title) {
   let taskarray = [];
   
@@ -10,7 +9,7 @@ export default function createProjec(title) {
   if (storedProjectId) {
     projectId = JSON.parse(storedProjectId)
   } else {
-    localStorage.setItem("projectId", JSON.stringify(projectId));
+    localStorage.setItem("projectId", JSON.stringify(projectId));//update the projectId in the local storage 
   }
   let id = null;
   // Assign the current projectId and increment it
@@ -33,13 +32,14 @@ export default function createProjec(title) {
 
   let addTask = function addTask(projectid, task) {
     const storedTaskArray = localStorage.getItem(`taskarray_${projectid}`);
-    console.log(storedTaskArray)
     if (storedTaskArray) {
       taskarray = JSON.parse(storedTaskArray);
     }
     const updatedTaskArray = [...taskarray, task]; // Create a new array by spreading the existing taskarray
-    console.log("addTaskteki task array", `taskarray_${projectid}`, updatedTaskArray, projectid);
-    task.id = taskId;
+    console.log(task.id,"task.id1")
+    if (task.id==null) {
+      task.id = taskId;// Assign the ID only if it doesn't exist
+    }
     localStorage.setItem(`taskarray_${projectid}`, JSON.stringify(updatedTaskArray));
   }
 
@@ -56,15 +56,12 @@ export default function createProjec(title) {
 
   let deleteTask = function deleteTask(projectid, task) {
     const storedTaskArray = localStorage.getItem(`taskarray_${projectid}`);
-    console.log(storedTaskArray)
     if (storedTaskArray) {
       taskarray = JSON.parse(storedTaskArray);
     }
     const index = taskarray.findIndex(item => item.id === task.id);
-    if (index !== -1) {
       taskarray.splice(index, 1);
       localStorage.setItem(`taskarray_${projectid}`, JSON.stringify(taskarray));
-    }
   }
 
   

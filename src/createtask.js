@@ -5,6 +5,6 @@ export default function createTask(title, description, dueDate, importance, proj
         dueDate,
         importance,
         project,
-        completed:false,
+        completed,
     }
 }
