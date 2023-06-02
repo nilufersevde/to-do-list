@@ -1,12 +1,15 @@
 export default function displayTasks(project) {
     
     let table = document.querySelector("table");
+
+    //retrieving the projects task array from local storage 
     const storedTaskArray = localStorage.getItem(`taskarray_${project.id}`);
     
     if (storedTaskArray) {
         project.taskarray = JSON.parse(storedTaskArray); 
     }
-
+    
+    //for not displaying the tasks again that is already displayed in the page, starting from the lenght of the tables rows to display tasks
     for (let i=table.rows.length; i < project.taskarray.length; i++) {
          let row = table.insertRow(i);
          row.setAttribute('data-index', project.taskarray[i].id);
@@ -22,8 +25,6 @@ export default function displayTasks(project) {
          let title = row.insertCell(1);
          title.innerHTML = project.taskarray[i].title;
          title.classList.add("tb");
-
-        
 
          let importance = row.insertCell(2);
          importance.innerHTML = project.taskarray[i].importance;
@@ -71,7 +72,7 @@ export default function displayTasks(project) {
          }
 
 
-        //toggling between checked and not checked 
+        //toggeling between checked and not checked when click on the checkbox 
         const checkboxes = table.querySelectorAll('.check');
         checkboxes.forEach((checkbox) => {
         checkbox.addEventListener('change', function() {

@@ -38,17 +38,18 @@ export default function createProjec(title) {
     const updatedTaskArray = [...taskarray, task]; // Create a new array by spreading the existing taskarray
     console.log(task.id,"task.id1")
     if (task.id==null) {
-      task.id = taskId;// Assign the ID only if it doesn't exist
+      task.id = taskId; //Assign the ID only if it doesn't exist
     }
     localStorage.setItem(`taskarray_${projectid}`, JSON.stringify(updatedTaskArray));
   }
 
-
+  //increasing the taskId when create a new task 
   let taskID = function taskID() {
     taskId++;
     localStorage.setItem("taskId", JSON.stringify(taskId));
   }
-
+   
+  //increasing the projectId when create a new project
   function projectID() {
     projectId++
     localStorage.setItem("projectId", JSON.stringify(projectId));
