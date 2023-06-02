@@ -61,36 +61,6 @@ export default function createUI() {
     let projectArray = []; //creating the project array to add the newly created 
     let currentproject = allTasks;
 
-
-    /**-------CHECK BOX--------**/
-
-    /*document.addEventListener("click", function(e) {
-    if (e.target.classList.contains("check")) {
-
-         let taskIndex = e.target.parentNode.parentNode.parentNode.getAttribute("data-index");
-         console.log(taskIndex);
-         let task = currentproject.taskarray.find((task) => task.id == taskIndex);
-     
-         if (e.target.checked) {
-           task.completed = true;
-         } else {
-           task.completed = false;
-         }
-     
-         console.log(task.completed);
-     
-         // Save the updated task array to localStorage
-         localStorage.setItem(`taskarray_${currentproject.id}`, JSON.stringify(currentproject.taskarray));
-         localStorage.setItem(`taskarray_${0}`, JSON.stringify(allTasks.taskarray));
-         localStorage.setItem(`taskarray_${1}`, JSON.stringify(today.taskarray));
-         localStorage.setItem(`taskarray_${2}`, JSON.stringify(thisWeek.taskarray));
-         localStorage.setItem(`taskarray_${3}`, JSON.stringify(important.taskarray));
-
-        } } )*/
-
-    /*--------------*/
-    
-
     // Retrieve projectArray from local storage
     const storedProjectArray = localStorage.getItem("projectArray");
 
@@ -166,6 +136,76 @@ export default function createUI() {
     } })
 
     /*------------*/
+
+
+    document.addEventListener("click", function(e) {
+        if (e.target.classList.contains("check")) {
+    
+             let taskIndex = e.target.parentNode.parentNode.parentNode.getAttribute("data-index");
+             let currentTask = currentproject.taskarray.find((task) => task.id == taskIndex);
+         
+             if (e.target.checked) {
+                currentTask.completed = true;
+             } else {
+                currentTask.completed = false;
+             }
+            
+            //updating the default projects after editing the task 
+        const storedAllTaskArray = localStorage.getItem(`taskarray_${0}`)
+        if (storedAllTaskArray)  {allTasks.taskarray = JSON.parse(storedAllTaskArray)};
+        const allTasksIndex = allTasks.taskarray.findIndex(item => item.id == currentTask.id);
+        allTasks.taskarray.splice(allTasksIndex, 1, currentTask);
+        console.log("allTasksIndex",allTasksIndex)
+
+        const storedTodayTaskArray = localStorage.getItem(`taskarray_${1}`)
+        if (storedTodayTaskArray)  {today.taskarray = JSON.parse(storedTodayTaskArray)};
+        const todayIndex = today.taskarray.findIndex(item => item.id == currentTask.id);
+        if (todayIndex !== -1) {
+            today.taskarray.splice(todayIndex, 1, currentTask);
+        }
+        console.log("todayIndex",todayIndex);
+
+        const storedThisWeekTaskArray = localStorage.getItem(`taskarray_${2}`)
+        if (storedThisWeekTaskArray)  {thisWeek.taskarray = JSON.parse(storedThisWeekTaskArray)};
+        const thisWeekIndex = thisWeek.taskarray.findIndex(item => item.id == currentTask.id);
+        if (thisWeekIndex !== -1) {
+            thisWeek.taskarray.splice(thisWeekIndex, 1, currentTask);
+        }
+        console.log("thisWeekIndex",thisWeekIndex);
+
+        const storedImportantTaskArray = localStorage.getItem(`taskarray_${3}`)
+        if (storedImportantTaskArray)  {important.taskarray = JSON.parse(storedImportantTaskArray)};
+        const importantIndex = important.taskarray.findIndex(item => item.id == currentTask.id);
+        if (importantIndex !== -1) {
+            important.taskarray.splice(importantIndex, 1, currentTask);
+        } 
+        console.log("importantIndex",importantIndex);
+        
+        //updating the task's project's task array in case the current project is one of the default projects 
+        if (currentTask.project !== "All tasks") {
+        const targetedproject = projectArray.find(item => item.title == currentTask.project);
+        console.log(targetedproject);
+        const storedTasksProjectArray = localStorage.getItem(`taskarray_${targetedproject.id}`)
+        if (storedTasksProjectArray)  {targetedproject.taskarray = JSON.parse(storedTasksProjectArray)};
+        const originalProjectIndex = targetedproject.taskarray.findIndex(item => item.id == currentTask.id);
+        targetedproject.taskarray[originalProjectIndex] = currentTask;
+        
+        console.log("targetedproject.taskarray[originalProjectIndex].id",targetedproject.taskarray[originalProjectIndex].id )
+        console.log("originalProjectIndex",originalProjectIndex);
+        console.log("targetedproject.taskarray",targetedproject.taskarray);
+        console.log("currentTask.id4",currentTask.id); 
+        localStorage.setItem(`taskarray_${targetedproject.id}`, JSON.stringify(targetedproject.taskarray));}
+    
+        
+        //updating the local storage of the projects 
+        
+        localStorage.setItem(`taskarray_${0}`, JSON.stringify(allTasks.taskarray));
+        localStorage.setItem(`taskarray_${1}`, JSON.stringify(today.taskarray));
+        localStorage.setItem(`taskarray_${2}`, JSON.stringify(thisWeek.taskarray));
+        localStorage.setItem(`taskarray_${3}`, JSON.stringify(important.taskarray));
+            
+    
+            } } )
 
 
     /*-------Modal Project------ */
@@ -329,9 +369,7 @@ export default function createUI() {
 
     document.addEventListener("click", function (e) {
 
-        
-
-        if (e.target.classList.contains("popup__close")) {
+        if (e.target.classList.contains("popup__close")) { 
             pop_up.style.display = "none";
             pagecontent.classList.remove("blur");
           }

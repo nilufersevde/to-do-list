@@ -17,14 +17,13 @@ export default function displayTasks(project) {
         <label for="accept">
             <input type="checkbox" class="check" name="check"></input>
         </label>` 
-        const checkbox = document.querySelector('.check');
-        if ( project.taskarray[i].completed == true) {
-          checkbox.checked = true;
-        }
+        
 
          let title = row.insertCell(1);
          title.innerHTML = project.taskarray[i].title;
          title.classList.add("tb");
+
+        
 
          let importance = row.insertCell(2);
          importance.innerHTML = project.taskarray[i].importance;
@@ -63,18 +62,33 @@ export default function displayTasks(project) {
          celldelete.appendChild(deletebutton);
          celldelete.classList.add("cell")
 
+         //displaying the task according to completed status
+         const checkbox = row.querySelector('.check');
+         if ( project.taskarray[i].completed == true) {
+           checkbox.checked = true;
+           title.classList.add('crossed-out', 'slanted');
+           row.classList.add("opacity");
+         }
+
+
+        //toggling between checked and not checked 
         const checkboxes = table.querySelectorAll('.check');
         checkboxes.forEach((checkbox) => {
         checkbox.addEventListener('change', function() {
+
         let title1 = this.closest('.row').querySelector('.tb');
         let row1 =this.closest('.row');
+
         if (checkbox.checked) {
           title1.classList.add('crossed-out', 'slanted');
-          row1.classList.add("opacity")
+          row1.classList.add("opacity");
+
         } else {
           title1.classList.remove('crossed-out', 'slanted');
-          row1.classList.remove("opacity")
+          row1.classList.remove("opacity");
+          
       }
+
     });
   });
      } 
