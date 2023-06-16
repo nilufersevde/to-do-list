@@ -5,12 +5,12 @@ This project is a task management web application that allows users to create, o
 
 # Features
 
-Create tasks with titles, descriptions, due dates, and importance levels.
-Organize tasks into different projects.
-Pre-defined default projects with tasks categorized by importance and due date:
-"All tasks": Contains all tasks created by the user.
-"Today": Contains tasks with due dates set to the current day.
-"This week": Contains tasks with due dates within the current week.
+Create tasks with titles, descriptions, due dates, and importance levels.  
+Organize tasks into different projects.  
+Pre-defined default projects with tasks categorized by importance and due date:  
+"All tasks": Contains all tasks created by the user.  
+"Today": Contains tasks with due dates set to the current day.  
+"This week": Contains tasks with due dates within the current week.  
 "Important": Contains tasks marked as important.
 Automatically assign tasks to the default projects based on their importance and due date.
 Mark tasks as completed or uncompleted.
