@@ -99,7 +99,7 @@ export default function createUI() {
           table.innerHTML = " ";
           addTaskButton.style.visibility = "visible";
 
-          if (e.target==allTasksDiv||e.target.parentElement==allTasksDiv) {
+          if (e.target==allTasksDiv || e.target.parentElement==allTasksDiv) {
             displayTasks(allTasks);
             if (document.querySelector(".active")){
             document.querySelector(".active").classList.remove("active")};
@@ -108,7 +108,7 @@ export default function createUI() {
             currentproject = allTasks;
           }
 
-          else if  (e.target==todayDiv||e.target.parentElement==todayDiv) {
+          else if  (e.target==todayDiv || e.target.parentElement==todayDiv) {
             displayTasks(today);
             addTaskButton.style.visibility = "hidden";
             if (document.querySelector(".active")){
@@ -118,7 +118,7 @@ export default function createUI() {
             currentproject = today;
           }
 
-          else if (e.target==thisWeekDiv ||e.target.parentElement==thisWeekDiv) {
+          else if (e.target==thisWeekDiv || e.target.parentElement==thisWeekDiv) {
             displayTasks(thisWeek);
             addTaskButton.style.visibility = "hidden";
             if (document.querySelector(".active")){
@@ -128,7 +128,7 @@ export default function createUI() {
             currentproject = thisWeek;
           }
 
-          else if (e.target==importantDiv||e.target.parentElement==importantDiv){
+          else if (e.target==importantDiv || e.target.parentElement==importantDiv){
             displayTasks(important);
             addTaskButton.style.visibility = "hidden";
             if (document.querySelector(".active")){
@@ -311,7 +311,6 @@ export default function createUI() {
     }
 
     closeButtonTask.addEventListener("click",closeFormTask);
-    
 
            //creates a task, and displays it in the projects page when submit the task form
         submitButton.addEventListener("click", (e) => {
@@ -332,6 +331,7 @@ export default function createUI() {
 
             //adding task to the default projects 
             if (currentproject !==allTasks) {allTasks.addTask(allTasks.id,task)};
+
             let formattedDate = toDate(new Date(taskDueDate));
             if (isToday(formattedDate)) {
                 today.addTask(1,task);
@@ -492,10 +492,6 @@ export default function createUI() {
         const originalProjectIndex = targetedproject.taskarray.findIndex(item => item.id == currentTask.id);
         targetedproject.taskarray[originalProjectIndex] = currentTask;
         
-        console.log("targetedproject.taskarray[originalProjectIndex].id",targetedproject.taskarray[originalProjectIndex].id )
-        console.log("originalProjectIndex",originalProjectIndex);
-        console.log("targetedproject.taskarray",targetedproject.taskarray);
-        console.log("currentTask.id4",currentTask.id); 
         localStorage.setItem(`taskarray_${targetedproject.id}`, JSON.stringify(targetedproject.taskarray));}
     
         
@@ -570,14 +566,18 @@ table.addEventListener("click",(e)=>{
         if (currentproject != thisWeek){
         thisWeek.deleteTask(2,currentTask)};
         if (currentproject != important){
+        important.deleteTask(3,currentTask)};
+            
 
         const originalproject = projectArray.find(item => item.title == currentTask.project);//finding the tasks's original project to making sure we are deleting the task from that project as well
+        console.log(originalproject);
         const Index = originalproject.taskarray.findIndex(item => item.id == currentTask.id);
+        console.log(Index);
         if (Index !== -1) {
             originalproject.deleteTask(originalproject.id,currentTask);
         }  
 
-        important.deleteTask(3,currentTask)};
+        
         e.target.parentNode.parentNode.remove();
         currentTask = null;}
 
