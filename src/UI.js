@@ -567,15 +567,14 @@ table.addEventListener("click",(e)=>{
         thisWeek.deleteTask(2,currentTask)};
         if (currentproject != important){
         important.deleteTask(3,currentTask)};
-            
 
+            
+        if (currentTask.project != "All tasks") {
         const originalproject = projectArray.find(item => item.title == currentTask.project);//finding the tasks's original project to making sure we are deleting the task from that project as well
-        console.log(originalproject);
         const Index = originalproject.taskarray.findIndex(item => item.id == currentTask.id);
-        console.log(Index);
         if (Index !== -1) {
             originalproject.deleteTask(originalproject.id,currentTask);
-        }  
+        }  }
 
         
         e.target.parentNode.parentNode.remove();
