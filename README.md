@@ -32,8 +32,7 @@ Editing tasks posed a challenge in terms of updating the task details while ensu
 
 # Lessons Learned
 
-Improved understanding of DOM manipulation using JavaScript.  
-Enhanced knowledge of working with localStorage for data storage and retrieval in web applications.  
+Improved understanding of DOM manipulation using JavaScript.   
 Learned how to create dynamic event listeners to handle user interactions.  
 Gained experience in managing user input and updating the data model while maintaining consistency in the user interface.  
 The experience gained from working with localStorage has provided valuable insights into data management in web applications and improved understanding of data persistence techniques.  
