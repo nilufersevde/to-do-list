@@ -20,9 +20,9 @@ Persist data using localStorage for task and project storage.
 
 # Technologies Used
 
-HTML
+HTML  
 CSS  
-JavaScript 
+JavaScript  
 Webpack  
 
 # Challenges Faced
