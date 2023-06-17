@@ -570,7 +570,8 @@ table.addEventListener("click",(e)=>{
 
             
         if (currentTask.project != "All tasks") {
-        const originalproject = projectArray.find(item => item.title == currentTask.project);//finding the tasks's original project to making sure we are deleting the task from that project as well
+        //finding the tasks's original project to make sure we are deleting the task from that project as well
+        const originalproject = projectArray.find(item => item.title == currentTask.project);
         const Index = originalproject.taskarray.findIndex(item => item.id == currentTask.id);
         if (Index !== -1) {
             originalproject.deleteTask(originalproject.id,currentTask);
@@ -592,4 +593,3 @@ openMenu.addEventListener("click", ()=> {
     menu.classList.toggle("open");
     pageContent.classList.toggle("open");
 })
-
