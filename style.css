@@ -284,8 +284,6 @@ form div:not(.radio):not(.button-container) {
    }
   
 
-
-
 /*----------MODAL TASK-------------*/
 
 
@@ -488,5 +486,3 @@ input[type="checkbox"]:checked ~ .tb {
     cursor: pointer;
     color:black;
   }
-
-
